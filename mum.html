@@ -1,0 +1,2615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mum's Plan</title>
+<meta name="theme-color" content="#0B0C10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mum's Plan">
+<link rel="manifest" href="mum-manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<style>
+  html, body { margin: 0; background: #0B0C10; -webkit-tap-highlight-color: transparent; }
+  #root { min-height: 100vh; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.28.4/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useMemo, useRef, useEffect } = React;
+
+function makeIcon(children, opts) {
+  const filled = opts && opts.fill;
+  return function IconComp({ size = 20, color = "currentColor", strokeWidth = 2, style, ...rest }) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : "none"} stroke={filled ? "none" : color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={style} {...rest}>
+        {children}
+      </svg>
+    );
+  };
+}
+const HomeIcon = makeIcon(<><path d="M3 11.5 12 4l9 7.5" /><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9" /></>);
+const Dumbbell = makeIcon(<path d="M6 7v10M4 9v6M18 7v10M20 9v6M8 12h8" />);
+const Utensils = makeIcon(<path d="M7 2v7a2 2 0 0 1-4 0V2M5 9v13M19 2c-2.5 0-4 2.5-4 6s1.5 6 4 6v9" />);
+const Trophy = makeIcon(<><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z" /><path d="M7 4H4a3 3 0 0 0 3 5" /><path d="M17 4h3a3 3 0 0 1-3 5" /><path d="M12 13v4" /><path d="M8 21h8" /><path d="M9 21v-2a3 3 0 0 1 3-3 3 3 0 0 1 3 3v2" /></>);
+const Settings2 = makeIcon(<><circle cx="12" cy="12" r="3" /><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8 7 17M17 7l2.8-2.8" /></>);
+const Flame = makeIcon(<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />);
+const LogOut = makeIcon(<><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></>);
+const Camera = makeIcon(<><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z" /><circle cx="12" cy="13" r="4" /></>);
+const Plus = makeIcon(<path d="M12 5v14M5 12h14" />);
+const Trash2 = makeIcon(<><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /></>);
+const Check = makeIcon(<path d="M20 6 9 17l-5-5" />);
+const Building2 = makeIcon(<><path d="M3 21h18" /><path d="M5 21V7l8-4v18" /><path d="M13 21V11l6 3v7" /></>);
+const Sparkles = makeIcon(<path d="M12 2l1.8 5.6L19.5 9l-5.7 1.8L12 16.4l-1.8-5.6L4.5 9l5.7-1.4L12 2Z" />, { fill: true });
+const Mail = makeIcon(<><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /><path d="m22 6-10 7L2 6" /></>);
+const Lock = makeIcon(<><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></>);
+const UserIcon = makeIcon(<><circle cx="12" cy="8" r="4" /><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" /></>);
+const ListChecks = makeIcon(<><path d="M9 6h11M9 12h11M9 18h11" /><path d="m3 6 1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2" /></>);
+const Moon = makeIcon(<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" />);
+const Droplet = makeIcon(<path d="M12 2s6 7 6 11.5a6 6 0 0 1-12 0C6 9 12 2 12 2Z" />);
+
+function usePS(key, opts) {
+  opts = opts || {};
+  return function (init) {
+    const today = nowAU().toDateString();
+    const wk = nowAU().getFullYear() + "-" + weekNumber();
+    const [val, setVal] = useState(() => {
+      try {
+        const raw = localStorage.getItem("iwm_" + key);
+        if (!raw) return init;
+        const p = JSON.parse(raw);
+        let v = p.v;
+        if (opts.reset === "day" && p.d !== today) v = opts.fresh ? opts.fresh(v) : init;
+        if (opts.reset === "week" && p.w !== wk) v = opts.fresh ? opts.fresh(v) : init;
+        return v;
+      } catch (e) {
+        return init;
+      }
+    });
+    useEffect(() => {
+      try {
+        localStorage.setItem("iwm_" + key, JSON.stringify({ d: today, w: wk, v: val }));
+      } catch (e) {}
+    }, [val]);
+    return [val, setVal];
+  };
+}
+
+
+
+/* ---------------- Exercise database ---------------- */
+
+const EX = {
+  push: [
+    { name: "Barbell bench press", sets: "4x8", location: "gym", equip: ["barbell"] },
+    { name: "Incline dumbbell press", sets: "3x10", location: "both", equip: ["dumbbells"] },
+    { name: "Machine chest press", sets: "3x10", location: "gym", equip: [] },
+    { name: "Pec deck fly", sets: "3x12", location: "gym", equip: [] },
+    { name: "Cable chest fly", sets: "3x12", location: "gym", equip: [] },
+    { name: "Overhead dumbbell press", sets: "3x10", location: "both", equip: ["dumbbells"] },
+    { name: "Dumbbell lateral raise", sets: "3x15", location: "both", equip: ["dumbbells"] },
+    { name: "Assisted dip machine", sets: "3x10", location: "gym", equip: [] },
+    { name: "Cable triceps pushdown", sets: "3x12", location: "gym", equip: [] },
+    { name: "Resistance band chest press", sets: "3x15", location: "home", equip: ["bands"] },
+    { name: "Pike push-ups", sets: "3x12", location: "home", equip: [] },
+    { name: "Push-ups", sets: "4x max", location: "both", equip: [] },
+    { name: "Parallel bar dips", sets: "3x max", location: "home", equip: ["dipbar"] },
+    { name: "Barbell floor press", sets: "4x8", location: "home", equip: ["barbell"] },
+    { name: "Landmine-style press (barbell)", sets: "3x10", location: "home", equip: ["barbell"] },
+    { name: "Diamond push-ups", sets: "3x max", location: "home", equip: [] },
+  ],
+  pull: [
+    { name: "Deadlift", sets: "4x6", location: "gym", equip: ["barbell"] },
+    { name: "Lat pulldown", sets: "4x10", location: "gym", equip: [] },
+    { name: "Seated cable row", sets: "3x10", location: "gym", equip: [] },
+    { name: "T-bar row machine", sets: "3x10", location: "gym", equip: [] },
+    { name: "Assisted pull-up machine", sets: "3x10", location: "gym", equip: [] },
+    { name: "Barbell row", sets: "3x10", location: "gym", equip: ["barbell"] },
+    { name: "Face pulls (cable)", sets: "3x15", location: "gym", equip: [] },
+    { name: "Single-arm dumbbell row", sets: "3x12", location: "both", equip: ["dumbbells"] },
+    { name: "Pull-ups", sets: "4x max", location: "both", equip: ["pullupbar"] },
+    { name: "Band-assisted rows", sets: "3x15", location: "home", equip: ["bands"] },
+    { name: "Dumbbell curls", sets: "3x12", location: "both", equip: ["dumbbells"] },
+    { name: "Kettlebell swings", sets: "3x15", location: "both", equip: ["kettlebell"] },
+    { name: "Towel rows (under table)", sets: "3x12", location: "home", equip: [] },
+  ],
+  legs: [
+    { name: "Barbell back squat", sets: "4x8", location: "gym", equip: ["barbell"] },
+    { name: "Smith machine squat", sets: "4x10", location: "gym", equip: [] },
+    { name: "Leg press", sets: "3x12", location: "gym", equip: [] },
+    { name: "Leg extension machine", sets: "3x12", location: "gym", equip: [] },
+    { name: "Leg curl machine", sets: "3x12", location: "gym", equip: [] },
+    { name: "Hip abductor machine", sets: "3x15", location: "gym", equip: [] },
+    { name: "Seated calf raise machine", sets: "4x15", location: "gym", equip: [] },
+    { name: "Goblet squat", sets: "4x12", location: "both", equip: ["dumbbells", "kettlebell"] },
+    { name: "Romanian deadlift", sets: "3x10", location: "both", equip: ["barbell", "dumbbells"] },
+    { name: "Walking lunges", sets: "3x20 steps", location: "both", equip: [] },
+    { name: "Bulgarian split squat", sets: "3x10/leg", location: "both", equip: ["dumbbells", "bench"] },
+    { name: "Calf raises", sets: "4x20", location: "both", equip: [] },
+    { name: "Home rack back squat", sets: "4x8", location: "home", equip: ["rack"] },
+    { name: "Trap bar deadlift", sets: "4x6", location: "home", equip: ["barbell", "rack"] },
+    { name: "Weighted glute kickbacks", sets: "3x15/leg", location: "home", equip: ["anklewt"] },
+    { name: "Band lateral walks", sets: "3x15", location: "home", equip: ["bands"] },
+    { name: "Bodyweight squats", sets: "4x25", location: "home", equip: [] },
+  ],
+  fullbody: [
+    { name: "Kettlebell swings", sets: "4x15", location: "both", equip: ["kettlebell"] },
+    { name: "Dumbbell thrusters", sets: "4x12", location: "both", equip: ["dumbbells"] },
+    { name: "Burpees", sets: "4x12", location: "both", equip: [] },
+    { name: "Renegade rows", sets: "3x10", location: "both", equip: ["dumbbells"] },
+    { name: "Barbell clean and press", sets: "4x6", location: "gym", equip: ["barbell"] },
+    { name: "Assault bike sprints", sets: "6x30s", location: "gym", equip: [] },
+    { name: "Rowing machine intervals", sets: "6x250m", location: "gym", equip: [] },
+    { name: "Mountain climbers", sets: "3x30s", location: "both", equip: [] },
+    { name: "Battle ropes", sets: "5x30s", location: "gym", equip: [] },
+    { name: "Band carries", sets: "3x20m", location: "home", equip: ["bands"] },
+  ],
+  core: [
+    { name: "Hanging leg raises", sets: "3x12", location: "both", equip: ["pullupbar"] },
+    { name: "Cable woodchop", sets: "3x12", location: "gym", equip: [] },
+    { name: "Ab crunch machine", sets: "3x15", location: "gym", equip: [] },
+    { name: "Plank", sets: "3x45s", location: "both", equip: [] },
+    { name: "Russian twists", sets: "3x20", location: "both", equip: ["dumbbells"] },
+    { name: "Bicycle crunches", sets: "3x20", location: "both", equip: [] },
+    { name: "Ab wheel / band rollout", sets: "3x10", location: "home", equip: ["bands", "abwheel"] },
+    { name: "Side plank", sets: "3x30s/side", location: "both", equip: [] },
+  ],
+  cardio: [
+    { name: "Treadmill intervals", sets: "20 min", location: "gym", equip: [] },
+    { name: "Home treadmill intervals", sets: "20 min", location: "home", equip: ["treadmill"] },
+    { name: "Exercise bike intervals", sets: "20 min", location: "home", equip: ["bike"] },
+    { name: "Home rowing machine", sets: "15 min", location: "home", equip: ["rower"] },
+    { name: "Stair climber machine", sets: "15 min", location: "gym", equip: [] },
+    { name: "Rowing machine", sets: "15 min", location: "gym", equip: [] },
+    { name: "Jump rope intervals", sets: "15 min", location: "both", equip: [] },
+    { name: "Outdoor run / brisk walk", sets: "25 min", location: "home", equip: [] },
+    { name: "Stair or step-ups", sets: "15 min", location: "home", equip: [] },
+  ],
+};
+
+const WEEK = [
+  { day: "Monday", focus: "Glutes", key: "glutes" },
+  { day: "Tuesday", focus: "Arms", key: "armsonly" },
+  { day: "Wednesday", focus: "Rest · Walk", key: "rest" },
+  { day: "Thursday", focus: "Thighs", key: "thighs" },
+  { day: "Friday", focus: "Glutes + arms", key: "glutearms" },
+  { day: "Saturday", focus: "Rest · Walk", key: "rest" },
+  { day: "Sunday", focus: "Rest", key: "rest" },
+];
+
+const mk = (t, loc, rows) =>
+  rows.map(([name, sets, equip, l]) => ({ name, sets, location: l || loc, equip: equip || [], t }));
+
+EX.shoulders = [
+  ...mk("sprs", "gym", [
+    ["Barbell overhead press", "4x8", ["barbell"], "both"],
+    ["Seated dumbbell shoulder press", "4x10", ["dumbbells"], "both"],
+    ["Machine shoulder press", "3x10"],
+    ["Smith machine shoulder press", "3x10"],
+    ["Plate-loaded shoulder press machine", "3x10"],
+    ["Arnold press", "3x10", ["dumbbells"], "both"],
+    ["Landmine press", "3x10", ["barbell"], "both"],
+    ["Push press", "4x6"],
+    ["Kettlebell press", "3x10/arm", ["kettlebell"], "both"],
+    ["Pike push-ups", "3x12", [], "home"],
+    ["Band overhead press", "3x15", ["bands"], "home"],
+  ]),
+  ...mk("sside", "gym", [
+    ["Dumbbell lateral raise", "3x15", ["dumbbells"], "both"],
+    ["Cable lateral raise", "3x15"],
+    ["Machine lateral raise", "3x15"],
+    ["Leaning cable lateral raise", "3x12/arm"],
+    ["Seated dumbbell lateral raise", "3x15", ["dumbbells"], "both"],
+    ["Upright row (EZ bar or cable)", "3x12"],
+    ["Dumbbell Y raise", "3x12", ["dumbbells"], "both"],
+    ["Band lateral raise", "3x15", ["bands"], "home"],
+  ]),
+  ...mk("srear", "gym", [
+    ["Reverse pec deck", "3x15"],
+    ["Cable reverse fly", "3x15"],
+    ["Face pulls (rope cable)", "3x15"],
+    ["Bent-over dumbbell reverse fly", "3x15", ["dumbbells"], "both"],
+    ["Incline-bench rear delt raise", "3x15", ["dumbbells", "bench"], "both"],
+    ["Band pull-aparts", "3x20", ["bands"], "home"],
+    ["Band face pulls", "3x15", ["bands"], "home"],
+    ["Prone Y raises", "3x12", [], "home"],
+  ]),
+  ...mk("strap", "gym", [
+    ["Dumbbell shrugs", "3x15", ["dumbbells"], "both"],
+    ["Barbell shrugs", "3x12", ["barbell"], "both"],
+    ["Smith machine shrugs", "3x12"],
+    ["Dumbbell front raise", "3x12", ["dumbbells"], "both"],
+    ["Cable front raise", "3x12"],
+    ["Plate front raise", "3x12"],
+  ]),
+];
+
+EX.arms = [
+  ...mk("bi", "gym", [
+    ["Barbell curl", "3x10", ["barbell"], "both"],
+    ["EZ-bar curl", "3x10", ["barbell"], "both"],
+    ["Dumbbell curls", "3x12", ["dumbbells"], "both"],
+    ["Hammer curls", "3x12", ["dumbbells"], "both"],
+    ["Incline dumbbell curls", "3x12", ["dumbbells", "bench"], "both"],
+    ["Preacher curl machine", "3x10"],
+    ["EZ-bar preacher curl", "3x10"],
+    ["Cable curl (straight bar)", "3x12"],
+    ["Cable rope hammer curl", "3x12"],
+    ["Machine biceps curl", "3x12"],
+    ["Concentration curls", "3x12", ["dumbbells"], "both"],
+    ["Spider curls", "3x12", ["dumbbells", "bench"], "both"],
+    ["Chin-ups", "3x max", ["pullupbar"], "both"],
+    ["Band curls", "3x15", ["bands"], "home"],
+  ]),
+  ...mk("tri", "gym", [
+    ["Cable triceps pushdown (bar)", "3x12"],
+    ["Rope pushdown", "3x12"],
+    ["Overhead cable triceps extension", "3x12"],
+    ["Skull crushers (EZ bar)", "3x10", ["barbell", "bench"], "both"],
+    ["Close-grip bench press", "3x8", ["barbell", "bench"], "both"],
+    ["Triceps dip machine", "3x10"],
+    ["Machine triceps extension", "3x12"],
+    ["Parallel bar dips", "3x max", ["dipbar"], "both"],
+    ["Overhead dumbbell extension", "3x12", ["dumbbells"], "both"],
+    ["Triceps kickbacks", "3x12", ["dumbbells"], "both"],
+    ["Bench dips", "3x15", [], "both"],
+    ["Diamond push-ups", "3x max", [], "both"],
+    ["Close-grip push-ups", "3x max", [], "home"],
+    ["Band triceps pushdown", "3x15", ["bands"], "home"],
+  ]),
+  ...mk("fore", "gym", [
+    ["Wrist curls", "3x15", ["dumbbells"], "both"],
+    ["Reverse wrist curls", "3x15", ["dumbbells"], "both"],
+    ["Reverse curls", "3x12", ["barbell"], "both"],
+    ["Farmer's carry", "3x30m", ["dumbbells"], "both"],
+    ["Dead hang", "3x30s", ["pullupbar"], "both"],
+  ]),
+];
+
+EX.chest = [
+  ...mk("cpress", "gym", [
+    ["Barbell bench press", "4x8"],
+    ["Dumbbell bench press", "4x10", ["dumbbells", "bench"], "both"],
+    ["Machine chest press", "3x10"],
+    ["Plate-loaded chest press", "3x10"],
+    ["Smith machine bench press", "3x10"],
+    ["Decline press machine", "3x10"],
+    ["Standing cable chest press", "3x12"],
+    ["Dumbbell floor press", "4x10", ["dumbbells"], "home"],
+    ["Barbell floor press", "4x8", ["barbell"], "home"],
+    ["Push-ups", "4x max", [], "both"],
+    ["Wide push-ups", "3x max", [], "home"],
+    ["Weighted push-ups", "3x12", ["vest"], "home"],
+    ["Band chest press", "3x15", ["bands"], "home"],
+  ]),
+  ...mk("cupper", "gym", [
+    ["Incline barbell press", "4x8"],
+    ["Incline dumbbell press", "3x10", ["dumbbells", "bench"], "both"],
+    ["Smith machine incline press", "3x10"],
+    ["Incline machine press", "3x10"],
+    ["Low-to-high cable fly", "3x12"],
+    ["Feet-elevated push-ups", "3x max", [], "both"],
+  ]),
+  ...mk("cfly", "gym", [
+    ["Pec deck fly", "3x12"],
+    ["Cable crossover (high to low)", "3x12"],
+    ["Single-arm cable fly", "3x12/arm"],
+    ["Dumbbell fly", "3x12", ["dumbbells", "bench"], "both"],
+    ["Incline dumbbell fly", "3x12", ["dumbbells", "bench"], "both"],
+    ["Dumbbell pullover", "3x12", ["dumbbells", "bench"], "both"],
+    ["Band chest fly", "3x15", ["bands"], "home"],
+  ]),
+  ...mk("cdip", "gym", [
+    ["Assisted dip machine (chest dips)", "3x10"],
+    ["Cable decline press", "3x12"],
+    ["Parallel bar dips (lean forward)", "3x max", ["dipbar"], "both"],
+  ]),
+];
+
+EX.back = [
+  ...mk("bvert", "gym", [
+    ["Lat pulldown (wide grip)", "4x10"],
+    ["Neutral-grip pulldown", "3x10"],
+    ["Close-grip lat pulldown", "3x10"],
+    ["Assisted pull-up machine", "3x10"],
+    ["Plate-loaded high row", "3x10"],
+    ["Single-arm cable pulldown", "3x12"],
+    ["Straight-arm pulldown", "3x12"],
+    ["Pull-ups", "4x max", ["pullupbar"], "both"],
+    ["Band lat pulldown", "3x15", ["bands"], "home"],
+  ]),
+  ...mk("brow", "gym", [
+    ["Seated cable row", "3x10"],
+    ["T-bar row", "3x10"],
+    ["Chest-supported row machine", "3x10"],
+    ["Hammer-style row machine", "3x10"],
+    ["Single-arm cable row", "3x12"],
+    ["Smith machine row", "3x10"],
+    ["Inverted row (bar)", "3x10"],
+    ["Barbell row", "3x10", ["barbell"], "both"],
+    ["Single-arm dumbbell row", "3x12", ["dumbbells"], "both"],
+    ["Chest-supported dumbbell row", "3x12", ["dumbbells", "bench"], "both"],
+    ["Kettlebell row", "3x12", ["kettlebell"], "both"],
+    ["TRX row", "3x12", ["trx"], "both"],
+    ["Band seated row", "3x15", ["bands"], "home"],
+    ["Towel rows (under a sturdy table)", "3x12", [], "home"],
+  ]),
+  ...mk("bhinge", "gym", [
+    ["Deadlift", "4x6", ["barbell"], "both"],
+    ["Trap bar deadlift", "4x6", ["barbell"], "both"],
+    ["Rack pull", "3x6", ["barbell", "rack"], "both"],
+    ["45° back extension", "3x12"],
+    ["Machine back extension", "3x12"],
+    ["Dumbbell deadlift", "3x10", ["dumbbells"], "both"],
+    ["Kettlebell deadlift", "3x12", ["kettlebell"], "both"],
+    ["Superman holds", "3x20s", [], "home"],
+  ]),
+  ...mk("btrap", "gym", [
+    ["Face pulls (rope cable)", "3x15"],
+    ["Reverse pec deck", "3x15"],
+    ["Barbell shrugs", "3x12", ["barbell"], "both"],
+    ["Dumbbell shrugs", "3x15", ["dumbbells"], "both"],
+    ["Bent-over dumbbell reverse fly", "3x15", ["dumbbells"], "both"],
+    ["Band pull-aparts", "3x20", ["bands"], "home"],
+    ["Prone Y raises", "3x12", [], "home"],
+  ]),
+];
+
+EX.legs = [
+  ...mk("quad", "gym", [
+    ["Barbell back squat", "4x8"],
+    ["Front squat", "3x8", ["barbell", "rack"], "both"],
+    ["Smith machine squat", "4x10"],
+    ["Leg press", "4x12"],
+    ["Hack squat machine", "3x10"],
+    ["Goblet squat", "4x12", ["dumbbells", "kettlebell"], "both"],
+    ["Bulgarian split squat", "3x10/leg", ["dumbbells", "bench"], "both"],
+    ["Dumbbell step-ups", "3x10/leg", ["dumbbells", "bench"], "both"],
+    ["Walking lunges", "3x20 steps", [], "both"],
+    ["Reverse lunges", "3x12/leg", [], "both"],
+    ["Rack back squat", "4x8", ["rack"], "home"],
+    ["Bodyweight squats", "4x25", [], "home"],
+  ]),
+  ...mk("hinge", "gym", [
+    ["Romanian deadlift", "3x10", ["barbell"], "both"],
+    ["Dumbbell Romanian deadlift", "3x10", ["dumbbells"], "both"],
+    ["Stiff-leg deadlift", "3x10"],
+    ["Smith machine RDL", "3x10"],
+    ["Cable pull-through", "3x12"],
+    ["Glute-ham raise", "3x10"],
+    ["Kettlebell swings", "4x15", ["kettlebell"], "both"],
+    ["Single-leg RDL", "3x10/leg", ["dumbbells"], "both"],
+  ]),
+  ...mk("hamcurl", "gym", [
+    ["Lying leg curl machine", "3x12"],
+    ["Seated leg curl machine", "3x12"],
+    ["Standing single-leg curl", "3x12"],
+    ["Nordic curl", "3x6", [], "both"],
+    ["Sliding leg curl (towel)", "3x12", [], "home"],
+    ["Band leg curl", "3x15", ["bands"], "home"],
+    ["Ankle-weight hamstring curl", "3x15", ["anklewt"], "home"],
+  ]),
+  ...mk("quadiso", "gym", [
+    ["Leg extension machine", "3x12"],
+    ["Single-leg extension", "3x12/leg"],
+    ["Narrow-stance leg press", "3x12"],
+    ["Sissy squat", "3x12", [], "both"],
+    ["Wall sit", "3x45s", [], "home"],
+    ["Spanish squat (band)", "3x45s", ["bands"], "home"],
+  ]),
+  ...mk("glute", "gym", [
+    ["Barbell hip thrust", "4x10", ["barbell", "bench"], "both"],
+    ["Smith machine hip thrust", "3x10"],
+    ["Hip thrust machine", "3x12"],
+    ["Cable glute kickback", "3x15/leg"],
+    ["Glute kickback machine", "3x15"],
+    ["Hip abductor machine", "3x15"],
+    ["Hip adductor machine", "3x15"],
+    ["Glute bridge", "3x15", [], "both"],
+    ["Dumbbell glute bridge", "3x12", ["dumbbells"], "both"],
+    ["Weighted glute kickbacks", "3x15/leg", ["anklewt"], "home"],
+    ["Band lateral walks", "3x15", ["bands"], "home"],
+    ["Banded glute bridge", "3x15", ["bands"], "home"],
+  ]),
+  ...mk("calf", "gym", [
+    ["Standing calf raise machine", "4x15"],
+    ["Seated calf raise machine", "4x15"],
+    ["Leg press calf raise", "4x15"],
+    ["Smith machine calf raise", "4x15"],
+    ["Donkey calf raise", "4x15"],
+    ["Single-leg calf raise (on a step)", "3x15/leg", [], "both"],
+    ["Dumbbell calf raises", "4x15", ["dumbbells"], "both"],
+    ["Calf raises", "4x20", [], "both"],
+  ]),
+];
+
+EX.core = [
+  ...mk("abs", "gym", [
+    ["Cable crunch", "3x15"],
+    ["Ab crunch machine", "3x15"],
+    ["Captain's chair leg raise", "3x12"],
+    ["Decline sit-ups", "3x15"],
+    ["Hanging leg raises", "3x12", ["pullupbar"], "both"],
+    ["Hanging knee raises", "3x12", ["pullupbar"], "both"],
+    ["Ab wheel rollout", "3x10", ["abwheel"], "both"],
+    ["Plank", "3x45s", [], "both"],
+    ["Reverse crunch", "3x15", [], "both"],
+    ["Dead bug", "3x12/side", [], "both"],
+    ["Hollow hold", "3x30s", [], "both"],
+    ["Band rollout", "3x10", ["bands"], "home"],
+  ]),
+  ...mk("obl", "gym", [
+    ["Cable woodchop", "3x12/side"],
+    ["Pallof press (cable)", "3x12/side"],
+    ["Cable side bend", "3x12/side"],
+    ["Rotary torso machine", "3x12/side"],
+    ["Decline oblique crunch", "3x12/side"],
+    ["Russian twists", "3x20", ["dumbbells"], "both"],
+    ["Landmine twist", "3x12/side", ["barbell"], "both"],
+    ["Suitcase carry", "3x30m", ["dumbbells"], "both"],
+    ["Side plank", "3x30s/side", [], "both"],
+    ["Bicycle crunches", "3x20", [], "both"],
+    ["Band Pallof press", "3x12/side", ["bands"], "home"],
+  ]),
+];
+
+EX.cardio = [
+  ...mk("cardio", "gym", [
+    ["Treadmill intervals", "20 min"],
+    ["Incline treadmill walk", "20 min"],
+    ["Stair climber machine", "15 min"],
+    ["Rowing machine", "15 min"],
+    ["Assault bike sprints", "8x30s"],
+    ["Cross trainer (elliptical)", "20 min"],
+    ["Exercise bike intervals", "20 min"],
+    ["Ski erg intervals", "10 min"],
+    ["Battle ropes", "5x30s"],
+    ["Sled push", "5x20m"],
+    ["Jump rope intervals", "15 min", [], "both"],
+    ["Home treadmill intervals", "20 min", ["treadmill"], "home"],
+    ["Home exercise bike", "20 min", ["bike"], "home"],
+    ["Home rowing machine", "15 min", ["rower"], "home"],
+    ["Outdoor run / brisk walk", "25 min", [], "home"],
+    ["Stair or step-ups", "15 min", [], "home"],
+  ]),
+];
+
+const ALL_EX = [...EX.shoulders, ...EX.arms, ...EX.chest, ...EX.back, ...EX.legs, ...EX.core, ...EX.cardio];
+
+const TAG_LABELS = {
+  sprs: "Shoulder press", sside: "Side delts", srear: "Rear delts", strap: "Front delts / traps",
+  bi: "Biceps", tri: "Triceps", fore: "Forearms",
+  cpress: "Chest press", cupper: "Upper chest", cfly: "Chest fly", cdip: "Dips / decline",
+  bvert: "Lats (vertical pull)", brow: "Rows", bhinge: "Lower back / deadlift", btrap: "Upper back / traps",
+  quad: "Quads (squat / press)", hinge: "Hamstrings (hinge)", hamcurl: "Hamstring curls", quadiso: "Quad isolation",
+  glute: "Glutes / hips", calf: "Calves", abs: "Abs", obl: "Obliques / rotation", cardio: "Cardio",
+};
+
+const DAY_TAGS = {
+  armsshoulders: ["sprs", "sside", "srear", "strap", "bi", "tri", "fore"],
+  chestback: ["cpress", "cupper", "cfly", "cdip", "bvert", "brow", "bhinge", "btrap"],
+  legscore: ["quad", "hinge", "hamcurl", "quadiso", "glute", "calf", "abs", "obl", "cardio"],
+};
+
+const DAY_SLOTS = {
+  armsshoulders: ["sprs", "sside", "bi", "tri", "srear", "bi", "tri", "strap", "fore"],
+  chestback: ["cpress", "bvert", "cupper", "brow", "cfly", "bhinge", "btrap", "cdip", "brow"],
+  legscore: ["quad", "hinge", "hamcurl", "calf", "abs", "quadiso", "obl", "glute", "abs"],
+};
+
+const QUOTES = [
+  "Discipline is choosing between what you want now and what you want most.",
+  "The body achieves what the mind believes.",
+  "Small daily wins compound into big change.",
+  "You don't have to be extreme, just consistent.",
+  "Rest is part of the training, not a break from it.",
+  "Progress, not perfection.",
+  "The only bad workout is the one that didn't happen.",
+  "Strength grows in the moments you think you can't go on.",
+];
+
+const MEAL_PLANS = [
+  {
+    label: "Lean & steady",
+    tip: "Prioritise protein at every meal to keep hunger steady between sessions.",
+    meals: [
+      { meal: "Breakfast", desc: "Greek yoghurt, oats, berries, and a spoon of peanut butter." },
+      { meal: "Lunch", desc: "Grilled chicken, quinoa, roasted veg, olive oil dressing." },
+      { meal: "Dinner", desc: "Baked salmon, sweet potato, steamed greens." },
+      { meal: "Snack", desc: "Cottage cheese with pineapple, or a protein shake." },
+    ],
+  },
+  {
+    label: "Muscle fuel",
+    tip: "Eat a bit more on training days — your body rebuilds while you rest.",
+    meals: [
+      { meal: "Breakfast", desc: "Eggs, wholegrain toast, avocado." },
+      { meal: "Lunch", desc: "Beef or tofu stir-fry with brown rice and mixed peppers." },
+      { meal: "Dinner", desc: "Turkey mince chilli with black beans." },
+      { meal: "Snack", desc: "Banana with almond butter and a handful of nuts." },
+    ],
+  },
+  {
+    label: "Light & fresh",
+    tip: "Hydration matters as much as food — aim for water with every meal.",
+    meals: [
+      { meal: "Breakfast", desc: "Smoothie: spinach, banana, protein powder, oat milk." },
+      { meal: "Lunch", desc: "Big salad with grilled halloumi or chickpeas, lemon dressing." },
+      { meal: "Dinner", desc: "Prawn or tofu stir-fried noodles with plenty of vegetables." },
+      { meal: "Snack", desc: "Rice cakes with hummus and cucumber." },
+    ],
+  },
+  {
+    label: "Comfort & recovery",
+    tip: "On rest days, favour slow-digesting carbs to keep energy steady.",
+    meals: [
+      { meal: "Breakfast", desc: "Porridge with cinnamon, apple, and walnuts." },
+      { meal: "Lunch", desc: "Chicken and vegetable soup with wholegrain bread." },
+      { meal: "Dinner", desc: "Baked cod, mashed potato, buttered green beans." },
+      { meal: "Snack", desc: "Warm milk with a small square of dark chocolate." },
+    ],
+  },
+];
+
+const EQUIP_TYPES = [
+  { key: "dumbbell", label: "Dumbbell", needsWeight: true, weights: [0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 17.5, 18, 20, 22.5, 24, 25, 27.5, 30, 32.5, 35, 37.5, 40, 45, 50, 55, 60] },
+  { key: "adjustable", label: "Adjustable dumbbell (max)", needsWeight: true, weights: [10, 15, 20, 24, 32, 36, 40, 52.5, 70, 90] },
+  { key: "kettlebell", label: "Kettlebell", needsWeight: true, weights: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 44, 48] },
+  { key: "barbell", label: "Barbell", needsWeight: true, weights: [6, 7.5, 10, 15, 20, 25] },
+  { key: "ezbar", label: "EZ curl bar", needsWeight: true, weights: [4, 6, 8, 10] },
+  { key: "trapbar", label: "Trap / hex bar", needsWeight: true, weights: [20, 25, 30] },
+  { key: "plates", label: "Weight plates (pair)", needsWeight: true, weights: [0.5, 1.25, 2.5, 5, 7.5, 10, 15, 20, 25, 30, 35, 45] },
+  { key: "medicineball", label: "Medicine ball", needsWeight: true, weights: [2, 3, 4, 5, 6, 8, 10, 12] },
+  { key: "vest", label: "Weighted vest", needsWeight: true, weights: [2, 4, 6, 8, 10, 12, 14, 16, 20, 25] },
+  { key: "anklewt", label: "Ankle / wrist weights", needsWeight: true, weights: [0.5, 1, 1.5, 2, 3, 4, 5] },
+  { key: "sandbag", label: "Sandbag", needsWeight: true, weights: [5, 10, 15, 20, 25, 30] },
+  { key: "bands", label: "Resistance band", needsWeight: false, weights: [] },
+  { key: "pullupbar", label: "Pull-up bar", needsWeight: false, weights: [] },
+  { key: "bench", label: "Bench", needsWeight: false, weights: [] },
+  { key: "rack", label: "Squat / power rack", needsWeight: false, weights: [] },
+  { key: "dipbar", label: "Dip bars", needsWeight: false, weights: [] },
+  { key: "treadmill", label: "Treadmill", needsWeight: false, weights: [] },
+  { key: "bike", label: "Exercise bike", needsWeight: false, weights: [] },
+  { key: "rower", label: "Rowing machine", needsWeight: false, weights: [] },
+  { key: "trx", label: "Suspension trainer", needsWeight: false, weights: [] },
+  { key: "abwheel", label: "Ab wheel", needsWeight: false, weights: [] },
+  { key: "jumprope", label: "Jump rope", needsWeight: false, weights: [] },
+  { key: "mat", label: "Yoga / exercise mat", needsWeight: false, weights: [] },
+  { key: "other", label: "Other", needsWeight: false, weights: [] },
+];
+
+const FOOD_QUICK = [
+  ["Egg", 78], ["Banana", 105], ["Chicken breast", 165], ["Rice (1 cup)", 205], ["Oats (1/2 cup)", 150],
+  ["Greek yoghurt", 100], ["Protein shake", 130], ["Pizza slice", 285], ["Burger & fries", 900], ["Large milkshake", 650],
+];
+
+const lvlCost = (l) => 100 + 3 * (l - 1); // each level needs 3 more XP than the last
+const xpAtLevel = (l) => 100 * (l - 1) + (3 * (l - 1) * (l - 2)) / 2;
+const levelFromXp = (x) => {
+  let n = Math.max(0, Math.floor((-98.5 + Math.sqrt(98.5 * 98.5 + 6 * x)) / 3));
+  while (xpAtLevel(n + 2) <= x) n++;
+  while (n > 0 && xpAtLevel(n + 1) > x) n--;
+  return n + 1;
+};
+const RANKS = [
+  { min: 1, label: "Rookie" },
+  { min: 3, label: "Grinder" },
+  { min: 6, label: "Warrior" },
+  { min: 10, label: "Iron Vet" },
+  { min: 15, label: "Legend" },
+];
+function rankFor(level) {
+  return RANKS.slice().reverse().find((r) => level >= r.min)?.label || "Rookie";
+}
+
+/* ---------------- Helpers ---------------- */
+
+EX.mum = [
+  ...mk("glute", "home", [
+    ["Single-leg glute bridge", "3x12/leg"], ["Donkey kicks", "3x15/leg"], ["Fire hydrants", "3x15/leg"], ["Frog pumps", "3x20"],
+    ["Hip thrust (shoulders on the couch)", "4x12"], ["Glute bridge march", "3x20"], ["Banded clamshells", "3x20/side", ["bands"]],
+    ["Curtsy lunge", "3x12/leg"], ["Step-ups onto a sturdy step", "3x12/leg"],
+  ]),
+  ...mk("hinge", "home", [
+    ["Good morning (bodyweight)", "3x15"], ["Single-leg deadlift (bodyweight)", "3x10/leg"], ["Backpack Romanian deadlift", "3x12"],
+    ["Dumbbell sumo deadlift", "3x12", ["dumbbells"]],
+  ]),
+  ...mk("quad", "home", [
+    ["Sumo squat", "4x15"], ["Chair squats", "3x15"], ["Split squat", "3x10/leg"], ["Pulse squats", "3x20"], ["Backpack squats", "4x12"],
+  ]),
+  ...mk("quadiso", "home", [["Squat hold", "3x30s"]]),
+  ...mk("hamcurl", "home", [["Hamstring walkouts", "3x8"], ["Glute bridge walkouts", "3x8"]]),
+  ...mk("adduct", "home", [
+    ["Side-lying inner thigh raise", "3x15/leg"], ["Sumo squat pulses", "3x20"], ["Lateral lunges", "3x10/side"],
+    ["Pillow squeeze bridge", "3x15"], ["Copenhagen plank (knee)", "3x20s/side"],
+  ]),
+  ...mk("abduct", "home", [
+    ["Side-lying leg raise", "3x15/leg"], ["Standing side leg raise", "3x15/leg"], ["Clamshells", "3x20/side"],
+    ["Band side steps", "3x15/side", ["bands"]], ["Standing banded abduction", "3x15/leg", ["bands"]],
+  ]),
+  ...mk("bi", "home", [["Backpack curls", "3x15"], ["Towel isometric curl", "3x20s"]]),
+  ...mk("tri", "home", [["Backpack overhead extension", "3x12"], ["Wall push-ups", "3x15"]]),
+];
+ALL_EX.push(...EX.mum);
+Object.assign(TAG_LABELS, { adduct: "Inner thighs", abduct: "Outer thighs / hips" });
+[DAY_SLOTS, DAY_TAGS].forEach((o) => Object.keys(o).forEach((k) => delete o[k]));
+Object.assign(DAY_SLOTS, {
+  glutes: ["glute", "hinge", "glute", "glute", "quad", "glute", "abs"],
+  armsonly: ["bi", "tri", "bi", "tri", "sside", "srear", "fore"],
+  thighs: ["quad", "hinge", "quad", "hamcurl", "adduct", "abduct", "quadiso", "calf"],
+  glutearms: ["glute", "bi", "hinge", "tri", "glute", "bi", "tri"],
+});
+Object.assign(DAY_TAGS, {
+  glutes: ["glute", "hinge", "quad", "abs"],
+  armsonly: ["bi", "tri", "sside", "srear", "fore"],
+  thighs: ["quad", "hinge", "hamcurl", "quadiso", "adduct", "abduct", "calf"],
+  glutearms: ["glute", "hinge", "bi", "tri"],
+});
+
+function filterExercises(list, location, equipKeys, maxDumbbell) {
+  return list.filter((ex) => {
+    if (location === "gym") return ex.location === "gym" || ex.location === "both";
+    if (ex.equip.length === 0) return ex.location === "home" || ex.location === "both";
+    const hasEquip = ex.equip.some((e) => equipKeys.includes(e));
+    if (!hasEquip) return false;
+    if (ex.equip.includes("dumbbells") && maxDumbbell !== null && maxDumbbell < 5) return false;
+    return ex.location === "home" || ex.location === "both";
+  });
+}
+
+function getExercisesForDay(dayKey, location, equipKeys, maxDumbbell, difficulty = "intermediate", variant = 0) {
+  if (dayKey === "rest") return [];
+  const slots = DAY_SLOTS[dayKey];
+  if (!slots) return filterExercises(EX[dayKey] || [], location, equipKeys, maxDumbbell).slice(0, 7);
+  const n =
+    location === "gym"
+      ? difficulty === "beginner" ? 5 : difficulty === "advanced" ? 9 : 7
+      : difficulty === "beginner" ? 5 : difficulty === "advanced" ? 8 : 6;
+  const used = {};
+  const out = [];
+  for (const t of slots) {
+    if (out.length >= n) break;
+    const pool = filterExercises(ALL_EX.filter((e) => e.t === t), location, equipKeys, maxDumbbell);
+    if (!pool.length) continue;
+    const occ = used[t] || 0;
+    const ex = pool[(occ + variant * 2) % pool.length];
+    used[t] = occ + 1;
+    if (out.some((o) => o.name === ex.name)) continue;
+    out.push(ex);
+  }
+  return out;
+}
+
+function adjustSets(setsStr, difficulty) {
+  if (difficulty === "intermediate") return setsStr;
+  const m = setsStr.match(/^(\d+)x(.+)$/);
+  if (!m) return setsStr;
+  const rest = m[2];
+  let sets = parseInt(m[1], 10);
+  sets = difficulty === "beginner" ? Math.max(2, sets - 1) : sets + 1;
+  return `${sets}x${rest}`;
+}
+
+function calcTDEE({ sex, age, height, weight, activity }) {
+  const bmr =
+    sex === "male"
+      ? 10 * weight + 6.25 * height - 5 * age + 5
+      : 10 * weight + 6.25 * height - 5 * age - 161;
+  const factors = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, athlete: 1.9 };
+  return Math.round(bmr * (factors[activity] || 1.2));
+}
+
+const TZ = "Australia/Sydney"; // Terrigal / Central Coast NSW
+function nowAU() {
+  const parts = new Intl.DateTimeFormat("en-AU", { timeZone: TZ, year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }).formatToParts(new Date());
+  const g = (t) => +parts.find((x) => x.type === t).value;
+  return new Date(g("year"), g("month") - 1, g("day"), g("hour") % 24, g("minute"), g("second"));
+}
+
+function todayIndex() {
+  const d = nowAU().getDay(); // 0 = Sunday
+  return (d + 6) % 7; // 0 = Monday ... 6 = Sunday
+}
+
+function weekNumber() {
+  const d = nowAU();
+  const start = new Date(d.getFullYear(), 0, 1);
+  return Math.floor((d - start) / (7 * 24 * 60 * 60 * 1000));
+}
+
+function greetingWord() {
+  const h = nowAU().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+}
+
+/* ---------------- Small UI atoms ---------------- */
+
+const Card = ({ children, style }) => (
+  <div style={{ background: "#15171C", border: "1px solid #262932", borderRadius: 14, padding: 18, ...style }}>
+    {children}
+  </div>
+);
+
+const Field = ({ icon, ...props }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 10, padding: "12px 14px" }}>
+    {icon}
+    <input
+      {...props}
+      style={{ background: "none", border: "none", outline: "none", color: "#F5F6F7", fontSize: 14, flex: 1 }}
+    />
+  </div>
+);
+
+const CHEATS = [
+  ["Pizza", /pizza/, 800, "Stick to 2 slices and add a side salad."],
+  ["Burger & chips", /burger|maccas|mcdonald|kfc|hungry jack/, 1000, "Go for a regular burger with no chips, or share the chips."],
+  ["Hot chips", /chips|fries|wedges/, 500, "Order a small and skip the extra sauce."],
+  ["Soft drink", /coke|soft drink|soda|sprite|fanta|energy drink|monster|red bull/, 150, "Swap for diet or soda water with lime. Liquid calories add up fast."],
+  ["Chocolate / lollies", /choc|lolly|lollies|candy|sweets|gummy/, 300, "Buy a small pack instead of a share bag."],
+  ["Ice cream", /ice cream|gelato|icecream/, 350, "Pick a single scoop or a small cup."],
+  ["Beer / alcohol", /beer|wine|vodka|bourbon|rum|spirits|alcohol|cider/, 400, "Have a water between drinks and set a drink limit before you go out."],
+  ["Takeaway", /takeaway|kebab|chinese|fish and chips|parma|schnitzel/, 1100, "Pick grilled over fried and keep the sauce on the side."],
+  ["Donuts / pastry", /donut|doughnut|pastry|pie|sausage roll|cake|muffin|croissant|biscuit|cookie/, 400, "Have one, not a box. Eat it after a proper meal so you're less hungry."],
+  ["Creamy pasta", /carbonara|creamy|alfredo|lasagne|lasagna/, 900, "Choose a tomato-based sauce and load up on veg."],
+];
+function CheatCard() {
+  const [open, setOpen] = useState(false);
+  const [sel, setSel] = useState([]);
+  const [txt, setTxt] = useState("");
+  const lower = txt.toLowerCase();
+  const hits = CHEATS.filter((c, i) => sel.includes(i) || (lower && c[1].test(lower)));
+  const kcal = hits.reduce((t, c) => t + c[2], 0);
+  const b = { background: "rgba(255,107,91,0.15)", border: "1px solid #FF6B5B", borderRadius: 10, color: "#FF9C90", fontSize: 12, fontWeight: 700, padding: "6px 10px", cursor: "pointer" };
+  return (
+    <Card style={{ borderLeft: "3px solid #FF6B5B" }}>
+      <button onClick={() => setOpen((v) => !v)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", color: "#F5F6F7", fontSize: 15, fontWeight: 800, cursor: "pointer", padding: 0 }}>
+        <span>I cheated</span>
+        <span style={{ color: "#9095A0", fontSize: 12 }}>{open ? "Hide" : "Tell me what you had"}</span>
+      </button>
+      {open && (
+        <div style={{ marginTop: 12 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+            {CHEATS.map((c, i) => (
+              <button key={c[0]} onClick={() => setSel((p) => (p.includes(i) ? p.filter((x) => x !== i) : [...p, i]))} style={{ ...b, background: sel.includes(i) ? "#FF6B5B" : b.background, color: sel.includes(i) ? "#0B0C10" : b.color }}>{c[0]}</button>
+            ))}
+          </div>
+          <input value={txt} onChange={(e) => setTxt(e.target.value)} placeholder="Or type it, e.g. pizza, coke, ice cream" style={{ width: "100%", boxSizing: "border-box", background: "#14161C", color: "#F5F6F7", border: "1px solid #2B2F38", borderRadius: 10, padding: 10, fontSize: 13, marginBottom: 12 }} />
+          {hits.length === 0 ? (
+            <div style={{ fontSize: 12, color: "#9095A0" }}>Pick or type what you had and I'll give you a plan. Nothing here is a big deal, one meal doesn't undo your progress.</div>
+          ) : (
+            <div>
+              <div style={{ fontSize: 13, marginBottom: 8 }}>Roughly <b style={{ color: "#FF9C90" }}>{kcal} kcal</b>. That's about {Math.round(kcal / 5)} min of brisk walking or {Math.round(kcal / 10)} min jogging.</div>
+              <div style={{ fontSize: 11, color: "#22D3EE", fontWeight: 700, marginBottom: 4 }}>TO COUNTERACT IT</div>
+              {["Go for a 20 to 40 min walk today.", "Drink plenty of water.", "Have a normal meal next with protein and veg. Don't skip meals to make up for it.", "Get your workout in or do an extra set or two."].map((t, i) => (<div key={i} style={{ fontSize: 13, color: "#D8DAE0", marginBottom: 4 }}>• {t}</div>))}
+              <div style={{ fontSize: 11, color: "#FBBF24", fontWeight: 700, margin: "10px 0 4px" }}>NEXT TIME</div>
+              {hits.map((c) => (<div key={c[0]} style={{ fontSize: 13, color: "#D8DAE0", marginBottom: 4 }}>• <b>{c[0]}:</b> {c[3]}</div>))}
+              <div style={{ fontSize: 11, color: "#5B6670", marginTop: 8 }}>Calories are rough estimates for a normal serve.</div>
+            </div>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+/* ---------------- Equipment badges ---------------- */
+const EQUIP_LABEL = { dumbbell: "Dumbbells", barbell: "Barbell", kettlebell: "Kettlebell", plate: "Weight plate", cable: "Cable machine", machine: "Weight machine", cardio: "Cardio machine", band: "Resistance band", bodyweight: "Bodyweight" };
+function equipKind(name, equip) {
+  const n = name.toLowerCase();
+  if (/treadmill|stair climber|rowing machine|assault bike|cross trainer|exercise bike|ski erg|home exercise bike|home rowing/.test(n)) return "cardio";
+  if (/\bband\b/.test(n)) return "band";
+  if (/cable|rope pushdown|pushdown|face pull|woodchop|pulldown|crossover/.test(n)) return "cable";
+  if (/dumbbell|arnold|goblet|farmer|suitcase|russian twist/.test(n)) return "dumbbell";
+  if (/kettlebell/.test(n)) return "kettlebell";
+  if (/plate-loaded|machine|pec deck|leg press|hack squat|assisted|single-leg curl|glute-ham|45°/.test(n)) return "machine";
+  if (/barbell|ez-bar|ez bar|deadlift|landmine|front squat|rack pull|push press|skull|good morning|t-bar|back squat|rack back/.test(n)) return "barbell";
+  if (/plate front/.test(n)) return "plate";
+  const e = equip || [];
+  if (e.includes("dumbbells")) return "dumbbell";
+  if (e.includes("barbell")) return "barbell";
+  if (e.includes("kettlebell")) return "kettlebell";
+  if (e.includes("bands")) return "band";
+  return "bodyweight";
+}
+function EquipIcon({ kind }) {
+  const c = "#FBBF24";
+  const s = { width: 15, height: 15, viewBox: "0 0 24 24", fill: "none", stroke: c, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", style: { verticalAlign: "-3px" } };
+  if (kind === "dumbbell" || kind === "kettlebell") return <svg {...s}><path d="M7 7v10M17 7v10M3.5 9.5v5M20.5 9.5v5M7 12h10" /></svg>;
+  if (kind === "barbell" || kind === "plate") return <svg {...s}><path d="M5 5v14M9 8v8M19 5v14M15 8v8M9 12h6M2 12h3M19 12h3" /></svg>;
+  if (kind === "cable") return <svg {...s}><path d="M12 3v10M8 3h8" /><circle cx="12" cy="17" r="3" /></svg>;
+  if (kind === "machine" || kind === "cardio") return <svg {...s}><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h8" /></svg>;
+  if (kind === "band") return <svg {...s}><ellipse cx="12" cy="12" rx="9" ry="5" /></svg>;
+  return <svg {...s}><circle cx="12" cy="5" r="2" /><path d="M12 7v7M7 10h10M12 14l-4 6M12 14l4 6" /></svg>;
+}
+function EquipBadge({ name, equip }) {
+  const k = equipKind(name, equip);
+  return (
+    <span style={{ marginLeft: 8, fontSize: 11, color: "#FBBF24", whiteSpace: "nowrap" }}>
+      <EquipIcon kind={k} /> {EQUIP_LABEL[k]}
+    </span>
+  );
+}
+
+/* ---------------- Suggested weights from your Gear ---------------- */
+const TAG_F = { sside: 0.55, srear: 0.5, strap: 0.8, bi: 0.6, tri: 0.6, fore: 0.5, cfly: 0.6, cupper: 0.85, abs: 0.5, obl: 0.5, hamcurl: 0.7, quadiso: 0.7 };
+function weightHint(ex, inv, diff, loc) {
+  if (!ex || loc !== "home") return null;
+  const f = ({ beginner: 0.5, intermediate: 0.7, advanced: 0.85 }[diff] || 0.7) * (TAG_F[ex.t] || 1);
+  const wOf = (types) => inv.filter((i) => types.includes(i.type)).map((i) => +i.weight || 0).filter((w) => w > 0);
+  const pick = (list, target) => {
+    const u = [...new Set(list)].sort((a, b) => a - b);
+    if (!u.length) return null;
+    const ok = u.filter((w) => w <= target);
+    return ok.length ? ok[ok.length - 1] : u[0];
+  };
+  const n = ex.name.toLowerCase();
+  const kind = equipKind(ex.name, ex.equip);
+  if (/weighted push-up/.test(n)) { const w = pick(wOf(["vest"]), Math.max(...wOf(["vest"]), 0) * f); return w ? `${w} kg vest` : null; }
+  if (/ankle-weight|weighted glute/.test(n)) { const w = pick(wOf(["anklewt"]), Math.max(...wOf(["anklewt"]), 0) * f); return w ? `${w} kg ankle weights` : null; }
+  if (kind === "dumbbell" || kind === "kettlebell") {
+    const base = wOf([kind === "dumbbell" ? "dumbbell" : "kettlebell"]);
+    const adj = kind === "dumbbell" ? Math.max(0, ...wOf(["adjustable"])) : 0;
+    const max = Math.max(0, ...base, adj);
+    if (!max) return null;
+    const list = adj ? [...base, Math.min(adj, Math.max(2.5, Math.round((max * f) / 2.5) * 2.5))] : base;
+    const w = pick(list, max * f);
+    const single = /goblet|pullover|squat|swing|deadlift|farmer|press.*kettlebell|kettlebell/.test(n) || kind === "kettlebell";
+    return `${w} kg${single ? "" : " in each hand"}`;
+  }
+  if (kind === "barbell") {
+    const type = /ez/.test(n) ? "ezbar" : /trap/.test(n) ? "trapbar" : "barbell";
+    const bars = wOf([type]);
+    if (!bars.length) return null;
+    const bar = Math.max(...bars);
+    const plates = wOf(["plates"]);
+    const maxTotal = bar + 2 * plates.reduce((t, w) => t + w, 0);
+    let sums = [0];
+    plates.forEach((w) => { sums = [...new Set([...sums, ...sums.map((x) => x + w)])]; });
+    const tgt = (maxTotal * f * 0.8 - bar) / 2;
+    const per = Math.max(0, ...sums.filter((x) => x <= tgt));
+    return per > 0 ? `${bar} kg bar + ${per} kg each side (${bar + 2 * per} kg total)` : `empty ${bar} kg bar`;
+  }
+  if (kind === "plate") { const w = pick(wOf(["plates"]), Math.max(...wOf(["plates"]), 0) * f); return w ? `${w} kg plate` : null; }
+  return null;
+}
+
+/* ---------------- How-to guides ---------------- */
+const POSES = {
+  press: [[0,160,20,180,180],[0,0,0,180,180]],
+  curl: [[0,180,180,180,180],[0,180,20,180,180]],
+  lateral: [[0,180,180,180,180],[0,100,100,180,180]],
+  squat: [[0,120,80,180,180],[35,110,80,115,200]],
+  hinge: [[0,180,180,180,180],[100,180,180,160,190]],
+  row: [[100,180,180,160,190],[100,235,150,160,190]],
+  vpull: [[0,15,0,182,182],[0,165,15,182,182]],
+  bench: [[270,165,5,75,170],[270,0,0,75,170]],
+  pushup: [[80,185,180,262,262],[88,245,130,262,262]],
+  triext: [[0,180,0,180,180],[0,180,180,180,180]],
+  legraise: [[0,0,0,180,180],[0,0,0,90,95]],
+  plank: [[80,180,90,262,262]],
+  crunch: [[270,300,120,60,150],[310,300,120,60,150]],
+  legext: [[355,90,90,90,180],[355,90,90,90,95]],
+  legcurl: [[355,90,90,90,95],[355,90,90,90,190]],
+};
+const HANG = { vpull: 1, legraise: 1 };
+const LYING = { bench: 1, crunch: 1 };
+const HOWTO = {
+  press: ["Overhead press", "Stand tall, core tight, weight at shoulder height.", "Press straight up until your arms are almost locked out.", "Lower under control back to your shoulders.", "Tip: don't arch your lower back."],
+  curl: ["Curl", "Elbows pinned to your sides, palms forward.", "Curl the weight up to shoulder height without swinging.", "Squeeze at the top, then lower slowly (2-3 seconds).", "Tip: if you have to swing, the weight is too heavy."],
+  lateral: ["Raise", "Slight bend in your elbows, weights by your sides.", "Lift out to the side (or front) until arms reach shoulder height.", "Pause for a second, then lower slowly.", "Tip: lead with your elbows, not your hands."],
+  squat: ["Squat", "Feet about shoulder-width, chest up, core braced.", "Sit hips back and down until thighs are about parallel.", "Keep knees tracking over your toes and your heels down.", "Drive up through your whole foot to stand."],
+  hinge: ["Hip hinge", "Soft knees, weight (or hands) close to your legs.", "Push your hips back, keeping your back flat, until you feel your hamstrings stretch.", "Squeeze your glutes to drive your hips forward and stand tall.", "Tip: the movement is in the hips, not the lower back."],
+  row: ["Row", "Hinge forward with a flat back, arms hanging.", "Pull the weight toward your lower ribs, elbows close to your body.", "Squeeze your shoulder blades together at the top.", "Lower slowly until your arms are straight."],
+  vpull: ["Vertical pull", "Grip the bar a little wider than your shoulders.", "Pull your elbows down toward your ribs, chest up.", "Squeeze your back at the bottom, don't yank with momentum.", "Let your arms extend fully on the way back up."],
+  bench: ["Chest press", "Lie back with feet planted and shoulder blades pinched together.", "Lower the weight to mid-chest with elbows about 45 degrees from your body.", "Press up until your arms are straight.", "Tip: keep your wrists straight and over your elbows."],
+  pushup: ["Push-up", "Hands under your shoulders, body in one straight line.", "Lower your chest toward the floor, elbows about 45 degrees.", "Push back up without letting your hips sag.", "Tip: drop to your knees if you can't keep a straight line."],
+  triext: ["Triceps extension", "Keep your upper arms still and elbows close.", "Straighten your elbows fully against the resistance.", "Pause, then let the weight rise slowly.", "Tip: only your forearms should move."],
+  legraise: ["Leg raise", "Hang (or sit) with your core tight and legs straight down.", "Raise your legs (or knees) until about hip height.", "Lower slowly, don't swing.", "Tip: curl your pelvis up slightly to hit your abs."],
+  plank: ["Plank", "Forearms on the floor, elbows under shoulders.", "Body in a straight line from head to heels.", "Squeeze your abs and glutes and breathe normally.", "Hold for the time listed."],
+  crunch: ["Crunch / core", "Lie back (or set up on the machine) with your core tight.", "Curl your ribs toward your hips, not your neck toward your knees.", "Pause at the top, then lower slowly.", "Tip: exhale as you crunch."],
+  legext: ["Leg extension", "Sit back with the pad just above your ankles.", "Straighten your legs fully and squeeze your quads.", "Lower slowly under control.", "Tip: don't kick the weight up."],
+  legcurl: ["Leg curl", "Set the pad just above your heels, hips down.", "Curl your heels toward your glutes and squeeze.", "Lower slowly until your legs are almost straight.", "Tip: keep your hips from lifting."],
+  generic: ["How to do it", "Set up with good posture and a weight you can control.", "Move through the full range slowly, about 2 seconds up and 2 seconds down.", "Breathe out on the hard part of each rep.", "Stop a rep or two before your form breaks down."],
+};
+function patternFor(name) {
+  const n = name.toLowerCase();
+  if (/leg curl|hamstring curl|nordic/.test(n)) return "legcurl";
+  if (/leg extension/.test(n)) return "legext";
+  if (/overhead press|shoulder press|arnold|push press|pike|landmine press|kettlebell press/.test(n)) return "press";
+  if (/lateral raise|upright row|front raise|y raise/.test(n)) return "lateral";
+  if (/curl/.test(n)) return "curl";
+  if (/pushdown|triceps extension|kickback|skull|dumbbell extension/.test(n)) return "triext";
+  if (/push-up/.test(n)) return "pushup";
+  if (/bench press|chest press|floor press|decline press|incline.*press/.test(n)) return "bench";
+  if (/squat|goblet|hack/.test(n) && !/split|sissy|wall/.test(n)) return "squat";
+  if (/deadlift|rdl|romanian|good morning|pull-through|swing|back extension/.test(n)) return "hinge";
+  if (/rows?\b/.test(n)) return "row";
+  if (/pulldown|pull-up|chin-up/.test(n)) return "vpull";
+  if (/leg raise|knee raise/.test(n)) return "legraise";
+  if (/plank/.test(n) && !/side/.test(n)) return "plank";
+  if (/crunch|sit-up|dead bug|hollow/.test(n)) return "crunch";
+  return "generic";
+}
+function Stick({ pat, frame, eq }) {
+  const p = POSES[pat][Math.min(frame, POSES[pat].length - 1)];
+  const mv = (o, a, L) => [o[0] + L * Math.sin((a * Math.PI) / 180), o[1] - L * Math.cos((a * Math.PI) / 180)];
+  const hip = [0, 0], sh = mv(hip, p[0], 24), el = mv(sh, p[1], 12), ha = mv(el, p[2], 12);
+  const kn = mv(hip, p[3], 15), ft = mv(kn, p[4], 15), hd = mv(sh, p[0], 10);
+  const pts = [hip, sh, el, ha, kn, ft, hd];
+  const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
+  const dx = 50 - (Math.min(...xs) + Math.max(...xs)) / 2;
+  const dy = HANG[pat] ? 14 - Math.min(...ys) : 86 - Math.max(...ys);
+  const T = (q) => [q[0] + dx, q[1] + dy];
+  const [H, S, E, A, K, F, D] = pts.map(T);
+  const ln = (a, b, c = "#F5F6F7", w = 4) => <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={c} strokeWidth={w} strokeLinecap="round" />;
+  return (
+    <svg viewBox="0 0 100 100" width="100%" style={{ background: "#14161C", borderRadius: 12 }}>
+      {!HANG[pat] && <line x1="6" y1="88" x2="94" y2="88" stroke="#3A3F4B" strokeWidth="2" />}
+      {LYING[pat] && <rect x={Math.min(S[0], H[0]) - 4} y={H[1] + 4} width={Math.abs(H[0] - S[0]) + 14} height="4" rx="2" fill="#3A3F4B" />}
+      {HANG[pat] && <line x1={A[0] - 18} y1={A[1]} x2={A[0] + 18} y2={A[1]} stroke="#9095A0" strokeWidth="3" strokeLinecap="round" />}
+      {ln(H, K)}{ln(K, F)}{ln(H, S, "#22D3EE", 5)}{ln(S, E, "#8B5CF6")}{ln(E, A, "#8B5CF6")}
+      <circle cx={D[0]} cy={D[1]} r="5" fill="#F5F6F7" />
+      {eq === "cable" && <line x1={A[0]} y1={A[1]} x2={A[0] + 12} y2="6" stroke="#9095A0" strokeWidth="1.5" strokeDasharray="3 2" />}
+      {eq === "dumbbell" && <g><rect x={A[0] - 6} y={A[1] - 1.5} width="12" height="3" fill="#9095A0" /><rect x={A[0] - 7} y={A[1] - 5} width="3.5" height="10" rx="1" fill="#FBBF24" /><rect x={A[0] + 3.5} y={A[1] - 5} width="3.5" height="10" rx="1" fill="#FBBF24" /></g>}
+      {(eq === "barbell" || eq === "plate") && <circle cx={A[0]} cy={A[1]} r="7" fill="none" stroke="#FBBF24" strokeWidth="3" />}
+      {eq === "kettlebell" && <circle cx={A[0]} cy={A[1] + 5} r="5" fill="#FBBF24" />}
+      <circle cx={A[0]} cy={A[1]} r="2.5" fill="#FF6B5B" />
+    </svg>
+  );
+}
+function HowToModal({ ex, hint, onClose }) {
+  const pat = patternFor(ex.name);
+  const g = HOWTO[pat];
+  const frames = pat === "generic" ? 0 : POSES[pat].length;
+  return (
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#1D2028", borderRadius: "20px 20px 0 0", padding: 18, width: "100%", maxWidth: 480, maxHeight: "85vh", overflowY: "auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <div><div style={{ fontSize: 16, fontWeight: 800 }}>{ex.name}</div><div style={{ marginTop: 2 }}><EquipBadge name={ex.name} equip={ex.equip} /></div>{hint && <div style={{ fontSize: 13, color: "#FBBF24", fontWeight: 700, marginTop: 4 }}>Use: {hint}</div>}</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#9095A0", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>Close</button>
+        </div>
+        {frames > 0 && (
+          <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+            {Array.from({ length: frames }).map((_, i) => (
+              <div key={i} style={{ flex: 1 }}>
+                <Stick pat={pat} frame={i} eq={equipKind(ex.name, ex.equip)} />
+                <div style={{ fontSize: 11, color: "#9095A0", textAlign: "center", marginTop: 4 }}>{frames === 1 ? "Hold" : i === 0 ? "Start" : "Finish"}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div style={{ fontSize: 11, color: "#22D3EE", fontWeight: 700, marginBottom: 6 }}>{g[0].toUpperCase()}</div>
+        {g.slice(1).map((t, i) => (
+          <div key={i} style={{ fontSize: 14, color: i === 3 ? "#FBBF24" : "#D8DAE0", marginBottom: 7 }}>{i < 3 ? `${i + 1}. ` : ""}{t}</div>
+        ))}
+        <div style={{ fontSize: 11, color: "#5B6670", marginTop: 8 }}>Simple diagrams show the movement type, with the weight in yellow. Machine settings vary, so ask gym staff if unsure.</div>
+      </div>
+    </div>
+  );
+}
+
+const DAILY_PLAN = [
+  ["Breakfast", [["Scrambled eggs on toast + banana", 450], ["Oats with milk, berries and honey", 420]]],
+  ["Snack", [["Greek yogurt + fruit", 200], ["Apple + handful of nuts", 230]]],
+  ["Lunch", [["Chicken wrap with salad", 600], ["Tuna, rice and veg bowl", 580]]],
+  ["Snack", [["Protein shake + banana", 280], ["Cheese and crackers", 250]]],
+  ["Dinner", [["Baked chicken, rice and veg", 650], ["Beef mince pasta with veg", 700]]],
+];
+
+function BackupCard() {
+  const [code, setCode] = useState("");
+  const [msg, setMsg] = useState("");
+  const make = () => {
+    try {
+      const o = {};
+      Object.keys(localStorage).filter((k) => k.startsWith("iwm_")).forEach((k) => (o[k] = localStorage.getItem(k)));
+      const c = btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+      setCode(c);
+      setMsg("Code ready — copy it and keep it somewhere safe (Notes).");
+      if (navigator.clipboard) navigator.clipboard.writeText(c).then(() => setMsg("Copied! Keep it somewhere safe (Notes)."), () => {});
+    } catch (e) { setMsg("Backup only works in the installed app."); }
+  };
+  const restore = () => {
+    try {
+      const o = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+      Object.keys(o).forEach((k) => k.startsWith("iwm_") && localStorage.setItem(k, o[k]));
+      setMsg("Restored! Reloading…");
+      setTimeout(() => location.reload(), 800);
+    } catch (e) { setMsg("That code didn't work — paste the whole thing."); }
+  };
+  const b = { background: "rgba(139,92,246,0.18)", border: "1px solid #8B5CF6", borderRadius: 10, color: "#C4B5FD", fontSize: 13, fontWeight: 700, padding: "9px 14px", cursor: "pointer" };
+  return (
+    <Card style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 4 }}>Back up your progress</div>
+      <p style={{ fontSize: 12, color: "#9095A0", margin: "0 0 10px" }}>
+        Your XP and levels are saved on this phone. Always open Ironweek from the home-screen icon (Safari and the icon keep separate saves). Make a backup code to restore them on a new phone or if they ever disappear.
+      </p>
+      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+        <button onClick={make} style={b}>Make backup code</button>
+        <button onClick={restore} style={b}>Restore from code</button>
+      </div>
+      <textarea value={code} onChange={(e) => setCode(e.target.value)} placeholder="Backup code appears here — or paste one to restore" rows={3} style={{ width: "100%", boxSizing: "border-box", background: "#14161C", color: "#F5F6F7", border: "1px solid #2B2F38", borderRadius: 10, padding: 8, fontSize: 11 }} />
+      {msg && <div style={{ fontSize: 12, color: "#FBBF24", marginTop: 6 }}>{msg}</div>}
+    </Card>
+  );
+}
+
+/* ---------------- Character avatar ---------------- */
+
+function characterState(level, streak, fatLevel) {
+  const muscle = Math.min(1, Math.log(Math.max(1, level)) / Math.log(300));
+  const big = Math.max(0, Math.min(1, Math.log(Math.max(1, level / 100)) / Math.log(5))); // late-game growth, level 100 to 500
+  const skinny = streak === 0 ? 1 : Math.max(0, 1 - streak / 5);
+  const fatness = Math.min(1, fatLevel / 10);
+  let caption = "Steady progress — keep it up.";
+  let need = "Keep logging workouts and meals to see him change over time.";
+  if (fatness > 0.55) {
+    caption = "Carrying a bit of extra weight from recent meals.";
+    need = "Finish a full workout day to help burn it back off.";
+  } else if (skinny > 0.6) {
+    caption = "Looking lean and a little low on energy.";
+    need = "It's been a while since a workout — get moving to build him back up.";
+  } else if (big > 0.5) {
+    caption = "Absolutely jacked. A true legend.";
+    need = "Keep training and he just keeps getting bigger.";
+  } else if (muscle > 0.55) {
+    caption = "Built, and getting stronger with every level.";
+    need = "Keep training and eating well to keep the gains coming.";
+  }
+  return { muscle, big, skinny, fatness, caption, need };
+}
+
+function CharacterAvatar({ level, streak, fatLevel }) {
+  const { muscle, big, skinny, fatness } = characterState(level, streak, fatLevel);
+
+  const cx = 90;
+  const shoulderY = 64;
+  const waistY = 130;
+  const shoulderW = Math.max(40, Math.min(118, 62 + muscle * 30 + big * 14 - skinny * 16));
+  const waistW = Math.max(28, Math.min(104, shoulderW * 0.66 + fatness * 32 - muscle * 6 - skinny * 6));
+  const armW = Math.max(9, Math.min(34, 13 + muscle * 8 + big * 6 - skinny * 5 + fatness * 3));
+  const legW = Math.max(14, Math.min(38, 18 + muscle * 6 + big * 4 - skinny * 5 + fatness * 5));
+  const armLen = 56;
+  const legLen = 68;
+  const shirt = level >= 15 ? "url(#legendGrad)" : level >= 10 ? "#FBBF24" : level >= 6 ? "#22D3EE" : level >= 3 ? "#8B5CF6" : "#5B6670";
+  const skin = "#D9A066";
+  const showAbs = muscle > 0.5 && fatness < 0.4;
+
+  const torsoPts = `${cx - shoulderW / 2},${shoulderY} ${cx + shoulderW / 2},${shoulderY} ${cx + waistW / 2},${waistY} ${cx - waistW / 2},${waistY}`;
+  const shortsPts = `${cx - waistW / 2},${waistY} ${cx + waistW / 2},${waistY} ${cx + waistW * 0.42},${waistY + 26} ${cx - waistW * 0.42},${waistY + 26}`;
+
+  return (
+    <svg width="150" height="210" viewBox="0 0 180 250">
+      <defs>
+        <linearGradient id="legendGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#FF6B5B" />
+          <stop offset="50%" stopColor="#8B5CF6" />
+          <stop offset="100%" stopColor="#22D3EE" />
+        </linearGradient>
+      </defs>
+
+      {big > 0.6 && <ellipse cx={cx} cy="130" rx={60 + big * 25} ry="115" fill="url(#legendGrad)" opacity={0.12 + big * 0.12} />}
+
+      {/* legs */}
+      <rect x={cx - legW - 6} y={waistY + 24} width={legW} height={legLen} rx={legW / 2} fill={skin} />
+      <rect x={cx + 6} y={waistY + 24} width={legW} height={legLen} rx={legW / 2} fill={skin} />
+      <ellipse cx={cx - legW - 6 + legW / 2} cy={waistY + 24 + legLen} rx={legW * 0.72} ry={legW * 0.4} fill="#F5F6F7" />
+      <ellipse cx={cx + 6 + legW / 2} cy={waistY + 24 + legLen} rx={legW * 0.72} ry={legW * 0.4} fill="#F5F6F7" />
+      <ellipse cx={cx - legW - 6 + legW / 2} cy={waistY + 24 + legLen + 4} rx={legW * 0.5} ry={legW * 0.16} fill={shirt} />
+      <ellipse cx={cx + 6 + legW / 2} cy={waistY + 24 + legLen + 4} rx={legW * 0.5} ry={legW * 0.16} fill={shirt} />
+
+      {/* shorts */}
+      {[0, 1, 2, 3].map((i) => {
+        const pts = shortsPts.split(" ")[i].split(",");
+        return <circle key={`s${i}`} cx={+pts[0]} cy={+pts[1]} r="7" fill="#20242B" />;
+      })}
+      <polygon points={shortsPts} fill="#20242B" />
+
+      {/* arms (behind torso edges) */}
+      <rect x={cx - shoulderW / 2 - armW + 5} y={shoulderY + 2} width={armW} height={armLen} rx={armW / 2} fill={skin} />
+      <rect x={cx + shoulderW / 2 - 5} y={shoulderY + 2} width={armW} height={armLen} rx={armW / 2} fill={skin} />
+      {muscle > 0.25 && (
+        <>
+          <ellipse cx={cx - shoulderW / 2 - armW / 2 + 5} cy={shoulderY + 16} rx={armW / 2 + muscle * 4 + big * 3} ry="12" fill={skin} />
+          <ellipse cx={cx + shoulderW / 2 + armW / 2 - 5} cy={shoulderY + 16} rx={armW / 2 + muscle * 4 + big * 3} ry="12" fill={skin} />
+        </>
+      )}
+      <circle cx={cx - shoulderW / 2 - armW / 2 + 5} cy={shoulderY + armLen} r={armW / 2 + 1} fill={skin} />
+      <circle cx={cx + shoulderW / 2 + armW / 2 - 5} cy={shoulderY + armLen} r={armW / 2 + 1} fill={skin} />
+
+      {/* torso */}
+      {[0, 1, 2, 3].map((i) => {
+        const pts = torsoPts.split(" ")[i].split(",");
+        return <circle key={`t${i}`} cx={+pts[0]} cy={+pts[1]} r="9" fill={shirt} />;
+      })}
+      <polygon points={torsoPts} fill={shirt} />
+      <ellipse cx={cx - shoulderW / 5} cy={shoulderY + 16} rx={shoulderW / 5} ry="18" fill="#FFFFFF" opacity="0.08" />
+      {showAbs && (
+        <>
+          <path d={`M${cx - 10} ${waistY - 30} Q${cx} ${waistY - 27} ${cx + 10} ${waistY - 30}`} stroke="#00000030" strokeWidth="2" fill="none" strokeLinecap="round" />
+          <path d={`M${cx - 10} ${waistY - 18} Q${cx} ${waistY - 15} ${cx + 10} ${waistY - 18}`} stroke="#00000030" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </>
+      )}
+      {fatness > 0.35 && <ellipse cx={cx} cy={waistY - 10} rx={waistW / 2 + fatness * 8} ry="20" fill={shirt} opacity="0.85" />}
+
+      {big > 0.1 && (
+        <>
+          <polygon points={`${cx - 9},46 ${cx + 9},46 ${cx + shoulderW / 2 - 4},${shoulderY + 2} ${cx - shoulderW / 2 + 4},${shoulderY + 2}`} fill={skin} opacity="0.9" />
+          <path d={`M${cx - shoulderW / 4} ${shoulderY + 24} Q${cx} ${shoulderY + 30} ${cx + shoulderW / 4} ${shoulderY + 24}`} stroke="#00000035" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </>
+      )}
+      {big > 0.45 && <path d={`M${cx - shoulderW / 2 + 6} ${shoulderY + 6} L${cx - waistW / 2 + 4} ${waistY - 10} M${cx + shoulderW / 2 - 6} ${shoulderY + 6} L${cx + waistW / 2 - 4} ${waistY - 10}`} stroke="#00000030" strokeWidth="2" fill="none" strokeLinecap="round" />}
+
+      {/* neck + head */}
+      <rect x={cx - 9} y="46" width="18" height="14" fill={skin} />
+      <circle cx={cx} cy="30" r="22" fill={skin} />
+      <path d={`M${cx - 22} 30 A22 22 0 0 1 ${cx + 22} 30 L${cx + 22} 22 A22 22 0 0 0 ${cx - 22} 22 Z`} fill="#2B2019" />
+      <circle cx={cx - 8} cy="30" r="2.2" fill="#1E2124" />
+      <circle cx={cx + 8} cy="30" r="2.2" fill="#1E2124" />
+      <path d={`M${cx - 8} 38 Q${cx} 43 ${cx + 8} 38`} stroke="#8A5A3A" strokeWidth="2" fill="none" strokeLinecap="round" />
+      {level >= 6 && <rect x={cx - 20} y="20" width="40" height="6" rx="3" fill="#FF6B5B" />}
+    </svg>
+  );
+}
+
+/* ---------------- Main App ---------------- */
+
+function FitnessTracker() {
+  const [accounts, setAccounts] = usePS("accounts", {})([]);
+  const [user, setUser] = usePS("user", {})({ name: "Guest", email: "" });
+  const [settingsMode, setSettingsMode] = useState("signup");
+  const [settingsName, setSettingsName] = useState("");
+  const [settingsEmail, setSettingsEmail] = useState("");
+  const [settingsPassword, setSettingsPassword] = useState("");
+  const [settingsError, setSettingsError] = useState("");
+  const [tab, setTab] = useState("home");
+  const [selectedDay, setSelectedDay] = useState(todayIndex());
+  const [locations, setLocations] = usePS("locations", {})(WEEK.map(() => "home"));
+  const [difficulty, setDifficulty] = usePS("difficulty", {})("intermediate");
+  const [timerLeft, setTimerLeft] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [dayNotes, setDayNotes] = usePS("dayNotes_v2", {reset:"week",fresh:()=>({})})({});
+  const [ormW, setOrmW] = useState("");
+  const [ormR, setOrmR] = useState("");
+  const [bodyLog, setBodyLog] = usePS("bodyLog", {})([]);
+  const [bwInput, setBwInput] = useState("");
+  const [completed, setCompleted] = usePS("completed_v2", {reset:"week",fresh:()=>({})})({});
+
+  const [inventory, setInventory] = usePS("inventory", {})([
+    { id: 1, type: "dumbbell", weight: 3, qty: 2 },
+    { id: 2, type: "dumbbell", weight: 5, qty: 2 },
+    { id: 3, type: "dumbbell", weight: 8, qty: 2 },
+    { id: 4, type: "bands", weight: 0, qty: 1 },
+    { id: 5, type: "mat", weight: 0, qty: 1 },
+  ]);
+  const [newItem, setNewItem] = useState({ type: "dumbbell", weight: null, qty: 1 });
+
+  const [prs, setPrs] = usePS("prs", {})([]);
+  const [newPr, setNewPr] = useState({ exercise: "", value: "", day: "Monday" });
+
+  const [xp, setXp] = usePS("xp", {})(0);
+  const [streak, setStreak] = usePS("streak", {})(0);
+  const [streakDays, setStreakDays] = usePS("streakDays_v2", {reset:"week",fresh:()=>({})})({});
+  const [fatLevel, setFatLevel] = usePS("fatLevel", {})(3);
+  const addXp = (amount) => setXp((prev) => Math.max(0, prev + amount));
+  const level = levelFromXp(xp);
+  const xpIntoLevel = xp - xpAtLevel(level);
+  const xpNeeded = lvlCost(level);
+  const lvlBonus = Math.floor(level / 10); // XP per workout creeps up every 10 levels
+
+  const prevLevelRef = useRef(level);
+  const [levelUpFlash, setLevelUpFlash] = useState(false);
+  useEffect(() => {
+    // one-time: keep everyone's existing level when the XP curve got steeper
+    try {
+      if (localStorage.getItem("iwm_curve2")) return;
+      localStorage.setItem("iwm_curve2", "1");
+    } catch (e) { return; }
+    const old = Math.floor(xp / 100) + 1;
+    prevLevelRef.current = old;
+    setXp(xpAtLevel(old) + (xp % 100));
+  }, []);
+  useEffect(() => {
+    if (level > prevLevelRef.current) {
+      setLevelUpFlash(true);
+      const t = setTimeout(() => setLevelUpFlash(false), 3500);
+      prevLevelRef.current = level;
+      return () => clearTimeout(t);
+    }
+    prevLevelRef.current = level;
+  }, [level]);
+
+  const charState = characterState(level, streak, fatLevel);
+
+  useEffect(() => {
+    if (!timerRunning) return;
+    const id = setInterval(() => setTimerLeft((t) => Math.max(0, t - 1)), 1000);
+    return () => clearInterval(id);
+  }, [timerRunning]);
+  useEffect(() => {
+    if (timerRunning && timerLeft === 0) setTimerRunning(false);
+  }, [timerLeft, timerRunning]);
+  const startTimer = (secs) => { setTimerLeft(secs); setTimerRunning(true); };
+  const fmtTime = (t) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
+  const orm = ormW && ormR ? Math.round(parseFloat(ormW) * (1 + parseInt(ormR, 10) / 30) * 10) / 10 : null;
+
+  const [profile, setProfile] = usePS("profile", {})({ sex: "female", age: 30, height: 165, weight: 65, activity: "moderate" });
+  const goalCalories = useMemo(() => calcTDEE(profile), [profile]);
+  const [log, setLog] = usePS("log", {reset:"day",fresh:()=>[]})([]);
+  const [foodName, setFoodName] = useState("");
+  const [foodCals, setFoodCals] = useState("");
+
+  const [mealInput, setMealInput] = useState("");
+  const [mealImage, setMealImage] = useState(null);
+  const [mealImageType, setMealImageType] = useState("image/jpeg");
+  const [mealLoading, setMealLoading] = useState(false);
+  const [mealResult, setMealResult] = useState("");
+  const [mealError, setMealError] = useState("");
+  const fileInputRef = useRef(null);
+
+  const [habits, setHabits] = usePS("habits", {reset:"day",fresh:(l)=>l.map((h)=>({...h,done:false,value:0,counted:false}))})([
+    { id: 1, name: "Read", type: "check", points: 10, done: false },
+    { id: 2, name: "Brush teeth", type: "check", points: 5, done: false },
+    { id: 3, name: "Drink water", type: "count", unit: "glasses", target: 8, points: 15, value: 0, counted: false },
+    { id: 4, name: "Sleep", type: "count", unit: "hours", target: 8, points: 20, value: 0, counted: false },
+  ]);
+  const [newHabit, setNewHabit] = useState({ name: "", type: "check", target: "", unit: "", points: 10 });
+
+  const equipKeys = useMemo(() => {
+    const keys = new Set();
+    inventory.forEach((it) => {
+      if (it.type === "dumbbell") keys.add("dumbbells");
+      if (it.type === "kettlebell") keys.add("kettlebell");
+      if (it.type === "barbell" || it.type === "plates") keys.add("barbell");
+      if (it.type === "bands") keys.add("bands");
+      if (it.type === "pullupbar") keys.add("pullupbar");
+      if (it.type === "bench") keys.add("bench");
+      if (it.type === "medicineball") keys.add("medicineball");
+      if (it.type === "vest") keys.add("vest");
+      if (it.type === "sandbag") keys.add("sandbag");
+      if (it.type === "trx") keys.add("trx");
+      if (it.type === "abwheel") keys.add("abwheel");
+      if (it.type === "jumprope") keys.add("jumprope");
+      if (it.type === "mat") keys.add("mat");
+      if (it.type === "adjustable") keys.add("dumbbells");
+      if (it.type === "ezbar" || it.type === "trapbar") keys.add("barbell");
+      if (it.type === "anklewt") keys.add("anklewt");
+      if (it.type === "rack") keys.add("rack");
+      if (it.type === "dipbar") keys.add("dipbar");
+      if (it.type === "treadmill") keys.add("treadmill");
+      if (it.type === "bike") keys.add("bike");
+      if (it.type === "rower") keys.add("rower");
+    });
+    return Array.from(keys);
+  }, [inventory]);
+
+  const maxDumbbell = useMemo(() => {
+    const dbs = inventory.filter((i) => i.type === "dumbbell" || i.type === "adjustable").map((i) => i.weight);
+    return dbs.length ? Math.max(...dbs) : 0;
+  }, [inventory]);
+
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+    const id = setInterval(() => setTick((t) => t + 1), 30000);
+    return () => clearInterval(id);
+  }, []);
+  const [extras, setExtras] = usePS("extras_v1", {reset:"week",fresh:()=>({})})({});
+  const [swaps, setSwaps] = usePS("swaps_v1", {reset:"week",fresh:()=>({})})({});
+  const [showOpts, setShowOpts] = useState(false);
+  const [howTo, setHowTo] = useState(null);
+  const [xpClaimed, setXpClaimed] = usePS("xpClaimed_v1", {reset:"week",fresh:()=>({})})({});
+  const [foodView, setFoodView] = useState("week");
+
+  const dayExercisesFor = (idx) => {
+    const base = getExercisesForDay(WEEK[idx].key, locations[idx], equipKeys, maxDumbbell, difficulty, idx >= 4 ? 1 : 0).map((ex) => {
+      const sw = swaps[`${idx}|${ex.name}`];
+      const rep = sw && ALL_EX.find((e) => e.name === sw);
+      return rep ? { ...rep, base: ex.name } : { ...ex, base: ex.name };
+    });
+    const have = new Set(base.map((e) => e.name));
+    const add = (extras[idx] || [])
+      .map((n) => ALL_EX.find((e) => e.name === n))
+      .filter((e) => e && !have.has(e.name))
+      .map((e) => ({ ...e, extra: true }));
+    return [...base, ...add];
+  };
+
+  const swapExercise = (dayIdx, ex) => {
+    const pool = filterExercises(ALL_EX.filter((e) => e.t === ex.t), locations[dayIdx], equipKeys, maxDumbbell);
+    const cur = dayExercisesFor(dayIdx).map((e) => e.name);
+    const start = Math.max(0, pool.findIndex((e) => e.name === ex.name));
+    for (let i = 1; i <= pool.length; i++) {
+      const cand = pool[(start + i) % pool.length];
+      if (!cur.includes(cand.name)) {
+        setSwaps((prev) => ({ ...prev, [`${dayIdx}|${ex.base}`]: cand.name }));
+        return;
+      }
+    }
+  };
+  const addExtra = (dayIdx, name) => setExtras((prev) => ({ ...prev, [dayIdx]: [...(prev[dayIdx] || []), name] }));
+  const removeExtra = (dayIdx, name) => setExtras((prev) => ({ ...prev, [dayIdx]: (prev[dayIdx] || []).filter((n) => n !== name) }));
+
+  const quote = QUOTES[nowAU().getDay() % QUOTES.length];
+  const mealPlan = MEAL_PLANS[weekNumber() % MEAL_PLANS.length];
+  const tIdx = todayIndex();
+  const isPastDay = selectedDay < tIdx;
+  const viewedDate = useMemo(() => {
+    const d = nowAU();
+    d.setDate(d.getDate() + (selectedDay - tIdx));
+    return d;
+  }, [selectedDay, tIdx]);
+  const viewedDateLabel = viewedDate.toLocaleDateString("en-AU", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const dayRelativeLabel = selectedDay === tIdx ? "Today" : selectedDay < tIdx ? "History · read-only" : "Upcoming";
+  const habitsDoneToday = habits.filter((h) => (h.type === "check" ? h.done : h.counted)).length;
+  const badges = [
+    { name: "First rep", ok: Object.values(completed).some(Boolean), icon: Check, color: "#34D399" },
+    { name: "3-day streak", ok: streak >= 3, icon: Flame, color: "#FF6B5B" },
+    { name: "Level 5", ok: level >= 5, icon: Trophy, color: "#FBBF24" },
+    { name: "Level 10", ok: level >= 10, icon: Trophy, color: "#F472B6" },
+    { name: "PR hunter", ok: prs.length >= 3, icon: Dumbbell, color: "#8B5CF6" },
+    { name: "Fuel up", ok: log.length >= 3, icon: Utensils, color: "#FF6B5B" },
+    { name: "Habit hero", ok: habits.length > 0 && habitsDoneToday === habits.length, icon: ListChecks, color: "#F472B6" },
+    { name: "Gear head", ok: inventory.length >= 5, icon: Settings2, color: "#22D3EE" },
+  ];
+
+  const setDayLocation = (idx, loc) => setLocations((prev) => prev.map((l, i) => (i === idx ? loc : l)));
+
+  const toggleDone = (dayIdx, name) => {
+    const k = `${dayIdx}-${name}`;
+    const currentlyDone = !!completed[k];
+    const willBeDone = !currentlyDone;
+    const exs = dayExercisesFor(dayIdx);
+    const isDone = (exName) => (exName === name ? currentlyDone : !!completed[`${dayIdx}-${exName}`]);
+    const willBeDoneFn = (exName) => (exName === name ? willBeDone : !!completed[`${dayIdx}-${exName}`]);
+    const wasFull = exs.length > 0 && exs.every((ex) => isDone(ex.name));
+    const isFullNow = exs.length > 0 && exs.every((ex) => willBeDoneFn(ex.name));
+
+    setCompleted((prev) => ({ ...prev, [k]: willBeDone }));
+    if (willBeDone && !xpClaimed[k]) {
+      addXp(10 + lvlBonus);
+      setXpClaimed((c) => ({ ...c, [k]: true }));
+    }
+
+    if (!wasFull && isFullNow && !streakDays[dayIdx]) {
+      setStreak((s) => s + 1);
+      setStreakDays((sd) => ({ ...sd, [dayIdx]: true }));
+      if (!xpClaimed["day" + dayIdx]) {
+        addXp(40 + 2 * lvlBonus);
+        setXpClaimed((c) => ({ ...c, ["day" + dayIdx]: true }));
+      }
+      setFatLevel((f) => Math.max(0, f - 1));
+    } else if (wasFull && !isFullNow && streakDays[dayIdx]) {
+      setStreak((s) => Math.max(0, s - 1));
+      setStreakDays((sd) => {
+        const next = { ...sd };
+        delete next[dayIdx];
+        return next;
+      });
+    }
+  };
+
+  const addInventoryItem = () => {
+    const type = EQUIP_TYPES.find((t) => t.key === newItem.type);
+    if (type.needsWeight && !newItem.weight) return;
+    const weight = type.needsWeight ? +newItem.weight : 0;
+    const qty = +newItem.qty || 1;
+    setInventory((prev) => {
+      const existing = prev.find((i) => i.type === newItem.type && i.weight === weight);
+      if (existing) {
+        return prev.map((i) => (i.id === existing.id ? { ...i, qty: i.qty + qty } : i));
+      }
+      return [...prev, { id: Date.now(), type: newItem.type, weight, qty }];
+    });
+    setNewItem({ type: newItem.type, weight: null, qty: 1 });
+  };
+  const removeInventoryItem = (id) => setInventory((prev) => prev.filter((i) => i.id !== id));
+
+  const toggleHabit = (id) => {
+    const h = habits.find((x) => x.id === id);
+    if (!h) return;
+    const newDone = !h.done;
+    setHabits((prev) => prev.map((x) => (x.id === id ? { ...x, done: newDone } : x)));
+    addXp(newDone ? h.points : -h.points);
+  };
+
+  const changeHabitValue = (id, delta) => {
+    const h = habits.find((x) => x.id === id);
+    if (!h) return;
+    const newValue = Math.max(0, h.value + delta);
+    const wasCounted = h.counted;
+    const isCountedNow = newValue >= h.target;
+    setHabits((prev) => prev.map((x) => (x.id === id ? { ...x, value: newValue, counted: isCountedNow } : x)));
+    if (!wasCounted && isCountedNow) addXp(h.points);
+    else if (wasCounted && !isCountedNow) addXp(-h.points);
+  };
+
+  const addCustomHabit = () => {
+    if (!newHabit.name.trim()) return;
+    const points = +newHabit.points || 10;
+    if (newHabit.type === "count") {
+      if (!newHabit.target) return;
+      setHabits((prev) => [
+        ...prev,
+        { id: Date.now(), name: newHabit.name.trim(), type: "count", unit: newHabit.unit.trim() || "", target: +newHabit.target, points, value: 0, counted: false },
+      ]);
+    } else {
+      setHabits((prev) => [...prev, { id: Date.now(), name: newHabit.name.trim(), type: "check", points, done: false }]);
+    }
+    setNewHabit({ name: "", type: "check", target: "", unit: "", points: 10 });
+  };
+  const removeHabit = (id) => setHabits((prev) => prev.filter((h) => h.id !== id));
+
+  const addPr = () => {
+    if (!newPr.exercise.trim() || !newPr.value.trim()) return;
+    setPrs((prev) => [{ id: Date.now(), ...newPr, date: nowAU().toLocaleDateString("en-AU") }, ...prev]);
+    setNewPr({ exercise: "", value: "", day: "Monday" });
+    addXp(25);
+  };
+  const removePr = (id) => setPrs((prev) => prev.filter((p) => p.id !== id));
+
+  const addFood = () => {
+    const cals = parseInt(foodCals, 10);
+    if (!foodName.trim() || !cals) return;
+    setLog((prev) => [...prev, { id: Date.now(), name: foodName.trim(), cals }]);
+    const newConsumed = consumed + cals;
+    let fatBump = 0;
+    if (cals >= 600) fatBump += 1;
+    if (newConsumed > goalCalories) fatBump += 0.5;
+    if (fatBump > 0) setFatLevel((f) => Math.min(10, f + fatBump));
+    setFoodName("");
+    setFoodCals("");
+    addXp(10);
+  };
+  const quickAdd = (name, cals) => {
+    setLog((prev) => [...prev, { id: Date.now() + Math.random(), name, cals }]);
+    let fatBump = 0;
+    if (cals >= 600) fatBump += 1;
+    if (consumed + cals > goalCalories) fatBump += 0.5;
+    if (fatBump > 0) setFatLevel((f) => Math.min(10, f + fatBump));
+    addXp(10);
+  };
+  const removeFood = (id) => {
+    setLog((prev) => prev.filter((f) => f.id !== id));
+    addXp(-10);
+  };
+  const consumed = log.reduce((s, f) => s + f.cals, 0);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMealImageType(file.type || "image/jpeg");
+    const reader = new FileReader();
+    reader.onload = () => setMealImage(String(reader.result).split(",")[1]);
+    reader.readAsDataURL(file);
+  };
+
+  const generateMeal = async () => {
+    if (!mealInput.trim() && !mealImage) {
+      setMealError("Describe what you have, or add a photo, first.");
+      return;
+    }
+    setMealLoading(true);
+    setMealError("");
+    setMealResult("");
+    try {
+      const content = [];
+      if (mealImage) content.push({ type: "image", source: { type: "base64", media_type: mealImageType, data: mealImage } });
+      content.push({
+        type: "text",
+        text: `I have these foods available at home: ${mealInput || "(see photo for ingredients)"}. Suggest one healthy meal that fits a fitness routine, using mostly what I have. Give a short meal name, then clear numbered step-by-step instructions to make it.`,
+      });
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          messages: [{ role: "user", content }],
+        }),
+      });
+      const data = await response.json();
+      const text = (data.content || []).map((b) => b.text || "").join("\n");
+      setMealResult(text || "No recipe came back — try rephrasing what you have.");
+    } catch (err) {
+      setMealError("Couldn't reach the recipe assistant just now — try again.");
+    } finally {
+      setMealLoading(false);
+    }
+  };
+
+  const submitSettings = () => {
+    const cleanEmail = settingsEmail.trim().toLowerCase();
+    setSettingsError("");
+    if (settingsMode === "signup") {
+      if (!settingsName.trim() || !cleanEmail || !settingsPassword.trim()) {
+        setSettingsError("Fill in every field first.");
+        return;
+      }
+      if (accounts.some((a) => a.email === cleanEmail)) {
+        setSettingsError("That email already has an account — log in instead.");
+        return;
+      }
+      const acc = { name: settingsName.trim(), email: cleanEmail, password: settingsPassword };
+      setAccounts((prev) => [...prev, acc]);
+      setUser(acc);
+    } else {
+      if (!cleanEmail || !settingsPassword.trim()) {
+        setSettingsError("Fill in every field first.");
+        return;
+      }
+      const match = accounts.find((a) => a.email === cleanEmail);
+      if (!match) {
+        setSettingsError("No account with that email yet — sign up instead.");
+        return;
+      }
+      if (match.password !== settingsPassword) {
+        setSettingsError("Wrong password for that account.");
+        return;
+      }
+      setUser(match);
+    }
+    setSettingsName("");
+    setSettingsEmail("");
+    setSettingsPassword("");
+  };
+
+  const navItems = [
+    { key: "home", icon: HomeIcon, color: "#22D3EE" },
+    { key: "plan", icon: Dumbbell, color: "#8B5CF6" },
+    { key: "habits", icon: ListChecks, color: "#F472B6" },
+    { key: "food", icon: Utensils, color: "#FF6B5B" },
+    { key: "prs", icon: Trophy, color: "#FBBF24" },
+    { key: "gear", icon: Settings2, color: "#34D399" },
+  ];
+
+  return (
+    <div style={{ fontFamily: "Inter, system-ui, sans-serif", background: "#0B0C10", minHeight: "100vh", color: "#F5F6F7", paddingBottom: 84, paddingTop: "env(safe-area-inset-top)", overflowX: "hidden" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap');
+        .disp { font-family: 'Archivo Black', sans-serif; }
+        input[type=range] { accent-color: #8B5CF6; }
+        ::selection { background: #7C3AED; color: white; }
+        select { color-scheme: dark; }
+        input, select, textarea, button { min-width: 0; box-sizing: border-box; }
+        * { max-width: 100%; }
+        @keyframes popIn { 0% { transform: translateY(-12px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+      `}</style>
+
+      {levelUpFlash && (
+        <div
+          style={{
+            position: "fixed",
+            top: 14,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 50,
+            background: "linear-gradient(120deg,#FBBF24,#FF6B5B)",
+            color: "#0B0C10",
+            fontWeight: 800,
+            fontSize: 13,
+            padding: "10px 18px",
+            borderRadius: 30,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+            animation: "popIn 0.3s ease-out",
+          }}
+        >
+          🎉 Level up! You're now Level {level} — {rankFor(level)}
+        </div>
+      )}
+
+      {/* top bar */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 0", maxWidth: 760, margin: "0 auto" }}>
+        <div className="disp" style={{ fontSize: 18, letterSpacing: 0.5 }}>
+          IRONWEEK
+        </div>
+        <button
+          onClick={() => setTab("settings")}
+          style={{ background: "#15171C", border: "1px solid #262932", color: "#D8DAE0", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 12, padding: "6px 12px", borderRadius: 20 }}
+        >
+          <UserIcon size={13} /> {user.name}
+        </button>
+      </div>
+
+      {/* date navigator */}
+      <div style={{ maxWidth: 760, margin: "10px auto 0", padding: "0 20px" }}>
+        <Card style={{ padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <button
+            onClick={() => setSelectedDay((d) => Math.max(0, d - 1))}
+            disabled={selectedDay === 0}
+            style={{ background: "none", border: "none", color: selectedDay === 0 ? "#333849" : "#9095A0", fontSize: 18, cursor: selectedDay === 0 ? "default" : "pointer", padding: "0 6px" }}
+          >
+            ‹
+          </button>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 13, fontWeight: 700 }}>{viewedDateLabel}</div>
+            <div style={{ fontSize: 10, color: isPastDay ? "#FBBF24" : "#9095A0", marginTop: 1 }}>{dayRelativeLabel}</div>
+          </div>
+          <button
+            onClick={() => setSelectedDay((d) => Math.min(6, d + 1))}
+            disabled={selectedDay === 6}
+            style={{ background: "none", border: "none", color: selectedDay === 6 ? "#333849" : "#9095A0", fontSize: 18, cursor: selectedDay === 6 ? "default" : "pointer", padding: "0 6px" }}
+          >
+            ›
+          </button>
+        </Card>
+      </div>
+
+      <div style={{ maxWidth: 760, margin: "0 auto", padding: "18px 20px 20px" }}>
+        {tab === "home" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <CheatCard />
+            <Card
+              style={{
+                background: "linear-gradient(135deg, rgba(124,58,237,0.35), rgba(34,211,238,0.2))",
+                border: "1px solid #333849",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontSize: 13, color: "#D8DAE0" }}>{greetingWord()},</div>
+                  <div className="disp" style={{ fontSize: 24, marginTop: 2 }}>{user.name}</div>
+                  <div style={{ fontSize: 11, color: "#D8DAE0", marginTop: 4 }}>
+                    {nowAU().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" })} · {nowAU().toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true })} · Terrigal time
+                  </div>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, background: "#0B0C10", borderRadius: 20, padding: "6px 12px" }}>
+                    <Flame size={16} color="#FF6B5B" />
+                    <span className="disp" style={{ fontSize: 16 }}>{streak}</span>
+                  </div>
+                  <div style={{ fontSize: 10, color: "#9095A0", marginTop: 4 }}>day streak</div>
+                </div>
+              </div>
+            </Card>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+              <Card style={{ padding: 12, borderTop: "3px solid #FBBF24" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 6 }}>
+                  <Trophy size={13} color="#FBBF24" />
+                  <span style={{ fontSize: 10, color: "#9095A0" }}>LEVEL</span>
+                </div>
+                <div className="disp" style={{ fontSize: 20 }}>{level}</div>
+                <div style={{ fontSize: 10, color: "#9095A0", marginTop: 2 }}>{rankFor(level)}</div>
+              </Card>
+              <Card style={{ padding: 12, borderTop: "3px solid #FF6B5B" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 6 }}>
+                  <Flame size={13} color="#FF6B5B" />
+                  <span style={{ fontSize: 10, color: "#9095A0" }}>CALORIES LEFT</span>
+                </div>
+                <div className="disp" style={{ fontSize: 20 }}>{goalCalories - consumed}</div>
+                <div style={{ fontSize: 10, color: "#9095A0", marginTop: 2 }}>of {goalCalories}</div>
+              </Card>
+              <Card style={{ padding: 12, borderTop: "3px solid #F472B6" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 6 }}>
+                  <ListChecks size={13} color="#F472B6" />
+                  <span style={{ fontSize: 10, color: "#9095A0" }}>HABITS</span>
+                </div>
+                <div className="disp" style={{ fontSize: 20 }}>{habitsDoneToday}/{habits.length}</div>
+                <div style={{ fontSize: 10, color: "#9095A0", marginTop: 2 }}>today</div>
+              </Card>
+            </div>
+
+            <Card>
+              <div style={{ fontSize: 12, color: "#9095A0", marginBottom: 4 }}>TODAY · {WEEK[tIdx].day.toUpperCase()}</div>
+              <div className="disp" style={{ fontSize: 18, marginBottom: 10 }}>{WEEK[tIdx].focus}</div>
+              {WEEK[tIdx].key === "rest" ? (
+                <p style={{ fontSize: 14, color: "#9095A0" }}>No lifting today — enjoy your basketball. Recovery is part of the plan.</p>
+              ) : (
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 14, color: "#D8DAE0", lineHeight: 1.9 }}>
+                  {dayExercisesFor(tIdx).slice(0, 4).map((ex) => (
+                    <li key={ex.name}>{ex.name} — {adjustSets(ex.sets, difficulty)}</li>
+                  ))}
+                </ul>
+              )}
+              <button
+                onClick={() => { setSelectedDay(tIdx); setTab("plan"); }}
+                style={{ marginTop: 12, background: "linear-gradient(120deg,#7C3AED,#22D3EE)", border: "none", color: "#0B0C10", borderRadius: 8, padding: "9px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+              >
+                Open full workout →
+              </button>
+            </Card>
+
+            <Card>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>This week</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {WEEK.map((d, i) => {
+                  const exs = dayExercisesFor(i);
+                  const isRest = d.key === "rest";
+                  const isDone = !isRest && exs.length > 0 && exs.every((ex) => completed[`${i}-${ex.name}`]);
+                  return (
+                    <div key={d.day} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < 6 ? "1px solid #1D2028" : "none" }}>
+                      <span style={{ fontSize: 13, color: i === tIdx ? "#F5F6F7" : "#9095A0", fontWeight: i === tIdx ? 700 : 400 }}>{d.day}</span>
+                      <span style={{ fontSize: 13, color: i === tIdx ? "#F5F6F7" : "#9095A0" }}>{d.focus}</span>
+                      <span style={{ width: 20, textAlign: "center" }}>
+                        {isRest ? (
+                          <span style={{ color: "#5B6670", fontSize: 12 }}>—</span>
+                        ) : isDone ? (
+                          <Check size={14} color="#34D399" />
+                        ) : (
+                          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", border: "1px solid #333849" }} />
+                        )}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            <Card>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>Weekly recap</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div style={{ background: "#0B0C10", borderRadius: 10, padding: 12 }}>
+                  <div className="disp" style={{ fontSize: 20, color: "#8B5CF6" }}>{WEEK.filter((d, i) => d.key !== "rest" && dayExercisesFor(i).length > 0 && dayExercisesFor(i).every((ex) => completed[`${i}-${ex.name}`])).length}/6</div>
+                  <div style={{ fontSize: 11, color: "#9095A0" }}>workout days done</div>
+                </div>
+                <div style={{ background: "#0B0C10", borderRadius: 10, padding: 12 }}>
+                  <div className="disp" style={{ fontSize: 20, color: "#22D3EE" }}>{Object.values(completed).filter(Boolean).length}</div>
+                  <div style={{ fontSize: 11, color: "#9095A0" }}>exercises ticked off</div>
+                </div>
+                <div style={{ background: "#0B0C10", borderRadius: 10, padding: 12 }}>
+                  <div className="disp" style={{ fontSize: 20, color: "#FBBF24" }}>{prs.length}</div>
+                  <div style={{ fontSize: 11, color: "#9095A0" }}>PRs logged</div>
+                </div>
+                <div style={{ background: "#0B0C10", borderRadius: 10, padding: 12 }}>
+                  <div className="disp" style={{ fontSize: 20, color: "#FF6B5B" }}>{log.length}</div>
+                  <div style={{ fontSize: 11, color: "#9095A0" }}>meals logged</div>
+                </div>
+              </div>
+            </Card>
+
+            <Card style={{ borderLeft: "3px solid #8B5CF6" }}>
+              <div style={{ fontSize: 11, color: "#9095A0", marginBottom: 6 }}>QUOTE OF THE DAY</div>
+              <p style={{ fontSize: 14, fontStyle: "italic", margin: 0 }}>"{quote}"</p>
+            </Card>
+
+            <Card style={{ borderLeft: "3px solid #FF6B5B" }}>
+              <div style={{ fontSize: 11, color: "#9095A0", marginBottom: 6 }}>MEAL TIP</div>
+              <p style={{ fontSize: 14, margin: 0 }}>{mealPlan.tip}</p>
+            </Card>
+          </div>
+        )}
+
+        {tab === "plan" && (
+          <div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 18 }}>
+              {WEEK.map((d, i) => (
+                <button
+                  key={d.day}
+                  onClick={() => setSelectedDay(i)}
+                  style={{
+                    padding: "10px 6px",
+                    background: selectedDay === i ? "linear-gradient(120deg,#7C3AED,#22D3EE)" : "#15171C",
+                    color: selectedDay === i ? "#0B0C10" : "#F5F6F7",
+                    border: "1px solid #262932",
+                    borderRadius: 10,
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ fontSize: 10, opacity: 0.75 }}>{d.day.slice(0, 3).toUpperCase()}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, marginTop: 2 }}>{d.focus}</div>
+                </button>
+              ))}
+            </div>
+
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 11, color: "#9095A0", marginBottom: 8 }}>DIFFICULTY</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                {["beginner", "intermediate", "advanced"].map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => setDifficulty(d)}
+                    style={{
+                      flex: 1,
+                      textTransform: "capitalize",
+                      padding: "9px 0",
+                      borderRadius: 10,
+                      border: difficulty === d ? "1px solid #8B5CF6" : "1px solid #262932",
+                      background: difficulty === d ? "rgba(139,92,246,0.18)" : "#15171C",
+                      color: difficulty === d ? "#C4B5FD" : "#9095A0",
+                      fontWeight: 700,
+                      fontSize: 13,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {WEEK[selectedDay].key === "rest" ? (
+              <Card style={{ textAlign: "center", padding: 40 }}>
+                <div className="disp" style={{ fontSize: 20, marginBottom: 6 }}>Rest day</div>
+                <p style={{ fontSize: 14, color: "#9095A0" }}>No lifting today — enjoy your basketball. Recovery is part of the plan.</p>
+              </Card>
+            ) : (
+              <>
+                {isPastDay && (
+                  <Card style={{ marginBottom: 16, padding: 12, border: "1px solid #FBBF24", background: "rgba(251,191,36,0.08)" }}>
+                    <p style={{ fontSize: 12, color: "#FBBF24", margin: 0 }}>
+                      📅 Viewing a past day — this is history, so it's locked. You can look, but not change what happened.
+                    </p>
+                  </Card>
+                )}
+
+                <div style={{ display: "none" }}>
+                  <button
+                    onClick={() => !isPastDay && setDayLocation(selectedDay, "gym")}
+                    style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: 10, borderRadius: 10, border: "1px solid #262932", background: locations[selectedDay] === "gym" ? "linear-gradient(120deg,#7C3AED,#22D3EE)" : "#15171C", color: locations[selectedDay] === "gym" ? "#0B0C10" : "#F5F6F7", fontWeight: 700, fontSize: 13, cursor: isPastDay ? "default" : "pointer", opacity: isPastDay ? 0.6 : 1 }}
+                  >
+                    <Building2 size={15} /> Gym
+                  </button>
+                  <button
+                    onClick={() => !isPastDay && setDayLocation(selectedDay, "home")}
+                    style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: 10, borderRadius: 10, border: "1px solid #262932", background: locations[selectedDay] === "home" ? "linear-gradient(120deg,#7C3AED,#22D3EE)" : "#15171C", color: locations[selectedDay] === "home" ? "#0B0C10" : "#F5F6F7", fontWeight: 700, fontSize: 13, cursor: isPastDay ? "default" : "pointer", opacity: isPastDay ? 0.6 : 1 }}
+                  >
+                    <HomeIcon size={15} /> Home
+                  </button>
+                </div>
+
+                {locations[selectedDay] === "home" && (
+                  <p style={{ fontSize: 12, color: "#5B6670", marginBottom: 10 }}>
+                    Matched to the gear you added on the Gear tab{inventory.length ? ` (${inventory.length} item${inventory.length > 1 ? "s" : ""})` : ""}.
+                  </p>
+                )}
+                {!isPastDay && (
+                  <Card style={{ marginBottom: 14, padding: 14 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                      <span style={{ fontSize: 12, color: "#9095A0" }}>REST TIMER</span>
+                      <span className="disp" style={{ fontSize: 22, color: timerRunning ? "#22D3EE" : timerLeft === 0 && !timerRunning ? "#9095A0" : "#F5F6F7" }}>{fmtTime(timerLeft)}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {[30, 60, 90, 120].map((sec) => (
+                        <button key={sec} onClick={() => startTimer(sec)} style={{ flex: 1, padding: "8px 0", background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#D8DAE0", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                          {sec}s
+                        </button>
+                      ))}
+                      <button onClick={() => { setTimerRunning(false); setTimerLeft(0); }} style={{ flex: 1, padding: "8px 0", background: "none", border: "1px solid #333849", borderRadius: 8, color: "#9095A0", fontSize: 12, cursor: "pointer" }}>
+                        Stop
+                      </button>
+                    </div>
+                    {timerLeft === 0 && !timerRunning && <p style={{ fontSize: 11, color: "#5B6670", margin: "8px 0 0" }}>Tap a time to start resting between sets.</p>}
+                  </Card>
+                )}
+                <Card style={{ padding: 6 }}>
+                  {dayExercisesFor(selectedDay).length === 0 ? (
+                    <p style={{ fontSize: 14, color: "#9095A0", padding: 12 }}>No matching exercises for your current gear — add more under the Gear tab.</p>
+                  ) : (
+                    dayExercisesFor(selectedDay).map((ex) => {
+                      const k = `${selectedDay}-${ex.name}`;
+                      const done = !!completed[k];
+                      return (
+                        <div
+                          key={ex.name}
+                          onClick={() => !isPastDay && toggleDone(selectedDay, ex.name)}
+                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 12px", borderBottom: "1px solid #262932", cursor: isPastDay ? "default" : "pointer", opacity: done ? 0.5 : 1, transition: "opacity 0.15s ease" }}
+                        >
+                          <div>
+                            <div style={{ fontSize: 15, fontWeight: 600, textDecoration: done ? "line-through" : "none" }}>{ex.name}</div>
+                            <div style={{ fontSize: 13, color: "#9095A0" }}>{adjustSets(ex.sets, difficulty)}{TAG_LABELS[ex.t] ? ` · ${TAG_LABELS[ex.t]}` : ""}<EquipBadge name={ex.name} equip={ex.equip} /></div>
+                            {weightHint(ex, inventory, difficulty, locations[selectedDay]) && (
+                              <div style={{ fontSize: 12, color: "#FBBF24", fontWeight: 700, marginTop: 2 }}>Use: {weightHint(ex, inventory, difficulty, locations[selectedDay])}</div>
+                            )}
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setHowTo(ex); }}
+                              aria-label="How to do this exercise"
+                              style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(34,211,238,0.12)", border: "1px solid #22D3EE", color: "#22D3EE", fontSize: 13, fontWeight: 800, cursor: "pointer", padding: 0 }}
+                            >
+                              ?
+                            </button>
+                            {!isPastDay && !done && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); ex.extra ? removeExtra(selectedDay, ex.name) : swapExercise(selectedDay, ex); }}
+                                style={{ background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#9095A0", fontSize: 11, fontWeight: 700, padding: "5px 9px", cursor: "pointer" }}
+                              >
+                                {ex.extra ? "Remove" : "Swap"}
+                              </button>
+                            )}
+                          <div
+                            style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: 7,
+                              border: done ? "2px solid #8B5CF6" : "2px solid #3A3F4A",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: done ? "linear-gradient(135deg,#8B5CF6,#7C3AED)" : "transparent",
+                              boxShadow: done ? "0 0 0 3px rgba(139,92,246,0.18)" : "none",
+                              flexShrink: 0,
+                              transition: "all 0.15s ease",
+                            }}
+                          >
+                            {done && <Check size={15} color="#F5F6F7" strokeWidth={3} />}
+                          </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </Card>
+
+                {!isPastDay && DAY_TAGS[WEEK[selectedDay].key] && (
+                  <Card style={{ marginTop: 14, padding: 14 }}>
+                    <button
+                      onClick={() => setShowOpts((v) => !v)}
+                      style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", color: "#F5F6F7", fontSize: 14, fontWeight: 700, cursor: "pointer", padding: 0 }}
+                    >
+                      <span>All {WEEK[selectedDay].focus.toLowerCase()} options</span>
+                      <span style={{ color: "#9095A0", fontSize: 12 }}>{showOpts ? "Hide" : "Show"}</span>
+                    </button>
+                    {showOpts && (
+                      <div style={{ marginTop: 12 }}>
+                        {DAY_TAGS[WEEK[selectedDay].key].map((t) => {
+                          const pool = filterExercises(ALL_EX.filter((e) => e.t === t), locations[selectedDay], equipKeys, maxDumbbell);
+                          if (!pool.length) return null;
+                          const names = dayExercisesFor(selectedDay).map((e) => e.name);
+                          const ex2 = extras[selectedDay] || [];
+                          return (
+                            <div key={t} style={{ marginBottom: 14 }}>
+                              <div style={{ fontSize: 11, color: "#22D3EE", fontWeight: 700, letterSpacing: 0.5, marginBottom: 6 }}>{TAG_LABELS[t].toUpperCase()}</div>
+                              {pool.map((e) => {
+                                const inPlan = names.includes(e.name);
+                                const isExtra = ex2.includes(e.name);
+                                return (
+                                  <div key={e.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #262932" }}>
+                                    <div>
+                                      <div style={{ fontSize: 14 }}>{e.name}</div>
+                                      <div style={{ fontSize: 12, color: "#9095A0" }}>{adjustSets(e.sets, difficulty)}<EquipBadge name={e.name} equip={e.equip} /></div>
+                                    </div>
+                                    {inPlan && !isExtra ? (
+                                      <span style={{ fontSize: 12, color: "#5B6670" }}>In plan</span>
+                                    ) : (
+                                      <button
+                                        onClick={() => (isExtra ? removeExtra(selectedDay, e.name) : addExtra(selectedDay, e.name))}
+                                        style={{ background: isExtra ? "#1D2028" : "rgba(139,92,246,0.18)", border: isExtra ? "1px solid #2B2F38" : "1px solid #8B5CF6", borderRadius: 8, color: isExtra ? "#9095A0" : "#C4B5FD", fontSize: 12, fontWeight: 700, padding: "5px 10px", cursor: "pointer" }}
+                                      >
+                                        {isExtra ? "Remove" : "+ Add"}
+                                      </button>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </Card>
+                )}
+
+                <Card style={{ marginTop: 14, padding: 14 }}>
+                  <div style={{ fontSize: 12, color: "#9095A0", marginBottom: 8 }}>NOTES FOR {WEEK[selectedDay].day.toUpperCase()}</div>
+                  <textarea
+                    value={dayNotes[selectedDay] || ""}
+                    onChange={(e) => !isPastDay && setDayNotes((n) => ({ ...n, [selectedDay]: e.target.value }))}
+                    readOnly={isPastDay}
+                    placeholder={isPastDay ? "No notes saved for this day." : "How did it feel? Weights used, form cues, anything to remember..."}
+                    rows={3}
+                    style={{ width: "100%", padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7", fontFamily: "inherit", fontSize: 13, resize: "vertical", opacity: isPastDay ? 0.7 : 1 }}
+                  />
+                </Card>
+              </>
+            )}
+          </div>
+        )}
+
+        {howTo && <HowToModal ex={howTo} hint={weightHint(howTo, inventory, difficulty, locations[selectedDay])} onClose={() => setHowTo(null)} />}
+        {tab === "food" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <button onClick={() => setFoodView("week")} disabled={foodView === "week"} style={{ background: "none", border: "none", color: foodView === "week" ? "#3A3F4B" : "#22D3EE", fontSize: 22, cursor: "pointer", padding: "0 6px" }}>‹</button>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#9095A0" }}>{foodView === "week" ? "WEEKLY PLAN" : "EASY DAILY PLAN"}</div>
+              <button onClick={() => setFoodView("day")} disabled={foodView === "day"} style={{ background: "none", border: "none", color: foodView === "day" ? "#3A3F4B" : "#22D3EE", fontSize: 22, cursor: "pointer", padding: "0 6px" }}>›</button>
+            </div>
+            {foodView === "week" && (<Card style={{ borderLeft: "3px solid #FF6B5B" }}>
+              <div style={{ fontSize: 11, color: "#9095A0", marginBottom: 4 }}>THIS WEEK'S PLAN · REFRESHES WEEKLY</div>
+              <div className="disp" style={{ fontSize: 18, marginBottom: 12 }}>{mealPlan.label}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {mealPlan.meals.map((m) => (
+                  <div key={m.meal} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(255,107,91,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                      <Utensils size={13} color="#FF6B5B" />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#FF6B5B" }}>{m.meal}</div>
+                      <div style={{ fontSize: 14, color: "#D8DAE0" }}>{m.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>)}
+            {foodView === "day" && (
+              <Card style={{ borderLeft: "3px solid #22D3EE" }}>
+                <div className="disp" style={{ fontSize: 18, marginBottom: 4 }}>Easy daily plan</div>
+                <div style={{ fontSize: 12, color: "#9095A0", marginBottom: 12 }}>Simple home meals, about {DAILY_PLAN.reduce((t, m) => t + m[1][nowAU().getDay() % 2][1], 0)} kcal. Swaps each day.</div>
+                {DAILY_PLAN.map((m, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #262932" }}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#22D3EE" }}>{m[0]}</div>
+                      <div style={{ fontSize: 14 }}>{m[1][nowAU().getDay() % 2][0]}</div>
+                    </div>
+                    <div style={{ fontSize: 12, color: "#9095A0" }}>{m[1][nowAU().getDay() % 2][1]} kcal</div>
+                  </div>
+                ))}
+              </Card>
+            )}
+
+            <div>
+              <h2 className="disp" style={{ fontSize: 16, marginBottom: 8 }}>Daily calories</h2>
+              <Card>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                  <label style={{ fontSize: 12, color: "#9095A0" }}>
+                    Sex
+                    <select value={profile.sex} onChange={(e) => setProfile({ ...profile, sex: e.target.value })} style={{ display: "block", width: "100%", padding: 8, marginTop: 4, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }}>
+                      <option value="female">Female</option>
+                      <option value="male">Male</option>
+                    </select>
+                  </label>
+                  <label style={{ fontSize: 12, color: "#9095A0" }}>
+                    Age
+                    <input type="number" value={profile.age} onChange={(e) => setProfile({ ...profile, age: +e.target.value })} style={{ display: "block", width: "100%", padding: 8, marginTop: 4, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                  </label>
+                  <label style={{ fontSize: 12, color: "#9095A0" }}>
+                    Height (cm)
+                    <input type="number" value={profile.height} onChange={(e) => setProfile({ ...profile, height: +e.target.value })} style={{ display: "block", width: "100%", padding: 8, marginTop: 4, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                  </label>
+                  <label style={{ fontSize: 12, color: "#9095A0" }}>
+                    Weight (kg)
+                    <input type="number" value={profile.weight} onChange={(e) => setProfile({ ...profile, weight: +e.target.value })} style={{ display: "block", width: "100%", padding: 8, marginTop: 4, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                  </label>
+                  <label style={{ fontSize: 12, color: "#9095A0", gridColumn: "1 / -1" }}>
+                    Activity level
+                    <select value={profile.activity} onChange={(e) => setProfile({ ...profile, activity: e.target.value })} style={{ display: "block", width: "100%", padding: 8, marginTop: 4, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }}>
+                      <option value="sedentary">Sedentary</option>
+                      <option value="light">Light (1-3 days/wk)</option>
+                      <option value="moderate">Moderate (3-5 days/wk)</option>
+                      <option value="active">Active (6-7 days/wk)</option>
+                      <option value="athlete">Athlete (2x/day)</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#0B0C10", borderRadius: 10, padding: 16, marginBottom: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#9095A0" }}>Daily goal</div>
+                    <div className="disp" style={{ fontSize: 24 }}>{goalCalories} <span style={{ fontSize: 12 }}>kcal</span></div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 11, color: "#9095A0" }}>Remaining</div>
+                    <div className="disp" style={{ fontSize: 24, color: goalCalories - consumed < 0 ? "#FF6B5B" : "#34D399" }}>{goalCalories - consumed}</div>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: 11, color: "#9095A0", marginBottom: 6 }}>QUICK ADD (approx. kcal)</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+                  {FOOD_QUICK.map(([n, c]) => (
+                    <button key={n} onClick={() => quickAdd(n, c)} style={{ padding: "6px 10px", borderRadius: 16, border: "1px solid #2B2F38", background: "#1D2028", color: "#D8DAE0", fontSize: 12, cursor: "pointer" }}>
+                      {n} · {c}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                  <input placeholder="Food or meal" value={foodName} onChange={(e) => setFoodName(e.target.value)} style={{ flex: "2 1 0%", minWidth: 0, padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                  <input placeholder="kcal" type="number" value={foodCals} onChange={(e) => setFoodCals(e.target.value)} style={{ flex: "1 1 0%", minWidth: 0, padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                  <button onClick={addFood} style={{ flex: "0 0 auto", padding: "0 14px", background: "linear-gradient(120deg,#7C3AED,#22D3EE)", color: "#0B0C10", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                    <Plus size={18} />
+                  </button>
+                </div>
+
+                {log.map((f) => (
+                  <div key={f.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 4px", borderBottom: "1px solid #262932", fontSize: 14 }}>
+                    <span>{f.name}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ color: "#9095A0" }}>{f.cals} kcal</span>
+                      <button onClick={() => removeFood(f.id)} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                        <Trash2 size={14} color="#5B6670" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </Card>
+            </div>
+
+            
+          </div>
+        )}
+
+        {tab === "habits" && (
+          <div>
+            <h2 className="disp" style={{ fontSize: 16, marginBottom: 6 }}>Daily habits</h2>
+            <p style={{ fontSize: 13, color: "#9095A0", marginBottom: 16 }}>
+              Check things off or log a number — every habit earns XP toward your level.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+              {habits.map((h) => (
+                <Card key={h.id} style={{ padding: 14 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      {h.name.toLowerCase().includes("sleep") ? (
+                        <Moon size={16} color="#F472B6" />
+                      ) : h.name.toLowerCase().includes("water") ? (
+                        <Droplet size={16} color="#F472B6" />
+                      ) : (
+                        <ListChecks size={16} color="#F472B6" />
+                      )}
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>{h.name}</div>
+                        <div style={{ fontSize: 11, color: "#9095A0" }}>+{h.points} XP{h.type === "count" ? ` at ${h.target}${h.unit ? " " + h.unit : ""}` : ""}</div>
+                      </div>
+                    </div>
+
+                    {h.type === "check" ? (
+                      <button
+                        onClick={() => toggleHabit(h.id)}
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderRadius: 9,
+                          border: h.done ? "2px solid #F472B6" : "2px solid #3A3F4A",
+                          background: h.done ? "linear-gradient(135deg,#F472B6,#EC4899)" : "transparent",
+                          boxShadow: h.done ? "0 0 0 3px rgba(244,114,182,0.18)" : "none",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        {h.done && <Check size={16} color="#0B0C10" strokeWidth={3} />}
+                      </button>
+                    ) : (
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <button onClick={() => changeHabitValue(h.id, -1)} style={{ width: 28, height: 28, borderRadius: 8, border: "1px solid #2B2F38", background: "#1D2028", color: "#F5F6F7", cursor: "pointer" }}>−</button>
+                        <span className="disp" style={{ fontSize: 15, minWidth: 46, textAlign: "center", color: h.counted ? "#F472B6" : "#F5F6F7" }}>{h.value}{h.unit ? ` ${h.unit}` : ""}</span>
+                        <button onClick={() => changeHabitValue(h.id, 1)} style={{ width: 28, height: 28, borderRadius: 8, border: "1px solid #2B2F38", background: "#1D2028", color: "#F5F6F7", cursor: "pointer" }}>+</button>
+                      </div>
+                    )}
+                  </div>
+                  {h.type === "count" && (
+                    <div style={{ height: 6, borderRadius: 3, background: "#0B0C10", marginTop: 10, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${Math.min(100, (h.value / h.target) * 100)}%`, background: "#F472B6", borderRadius: 3 }} />
+                    </div>
+                  )}
+                  <button onClick={() => removeHabit(h.id)} style={{ background: "none", border: "none", cursor: "pointer", marginTop: 8, display: "flex", alignItems: "center", gap: 4, color: "#5B6670", fontSize: 11 }}>
+                    <Trash2 size={12} /> Remove habit
+                  </button>
+                </Card>
+              ))}
+            </div>
+
+            <h2 className="disp" style={{ fontSize: 16, marginBottom: 8 }}>Add your own</h2>
+            <Card>
+              <p style={{ fontSize: 13, color: "#9095A0", marginBottom: 12 }}>
+                Anything counts — a check-off habit (like "meditate") or something you track with a number (like "pages read").
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <input placeholder="Habit name" value={newHabit.name} onChange={(e) => setNewHabit({ ...newHabit, name: e.target.value })} style={{ padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[
+                    { key: "check", label: "Simple check-off" },
+                    { key: "count", label: "Track a number" },
+                  ].map((t) => (
+                    <button
+                      key={t.key}
+                      onClick={() => setNewHabit({ ...newHabit, type: t.key })}
+                      style={{
+                        flex: 1,
+                        padding: "9px 0",
+                        borderRadius: 8,
+                        border: newHabit.type === t.key ? "1px solid #F472B6" : "1px solid #2B2F38",
+                        background: newHabit.type === t.key ? "rgba(244,114,182,0.15)" : "#1D2028",
+                        color: newHabit.type === t.key ? "#F472B6" : "#D8DAE0",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                {newHabit.type === "count" && (
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input type="number" placeholder="Target (e.g. 8)" value={newHabit.target} onChange={(e) => setNewHabit({ ...newHabit, target: e.target.value })} style={{ flex: 1, padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                    <input placeholder="Unit (e.g. glasses)" value={newHabit.unit} onChange={(e) => setNewHabit({ ...newHabit, unit: e.target.value })} style={{ flex: 1, padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                  </div>
+                )}
+                <input type="number" placeholder="XP reward" value={newHabit.points} onChange={(e) => setNewHabit({ ...newHabit, points: e.target.value })} style={{ padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                <button onClick={addCustomHabit} style={{ padding: "11px 0", background: "linear-gradient(120deg,#F472B6,#8B5CF6)", border: "none", borderRadius: 8, color: "#0B0C10", fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
+                  Add habit
+                </button>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {tab === "prs" && (
+          <div>
+            <Card
+              style={{
+                marginBottom: 16,
+                textAlign: "center",
+                background: "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(139,92,246,0.12))",
+                border: "1px solid #333849",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <CharacterAvatar level={level} streak={streak} fatLevel={fatLevel} />
+              </div>
+
+              <div className="disp" style={{ fontSize: 20, marginTop: 4 }}>{rankFor(level)} · Level {level}</div>
+
+              <div style={{ height: 8, borderRadius: 4, background: "#0B0C10", overflow: "hidden", margin: "10px auto 0", maxWidth: 280 }}>
+                <div style={{ height: "100%", width: `${xpIntoLevel}%`, background: "linear-gradient(90deg,#FBBF24,#FF6B5B)", borderRadius: 4 }} />
+              </div>
+              <div style={{ fontSize: 11, color: "#9095A0", marginTop: 4 }}>{xpIntoLevel} / {xpNeeded} XP to next level</div>
+
+              <p style={{ fontSize: 14, color: "#F5F6F7", marginTop: 14, marginBottom: 2, fontWeight: 600 }}>{charState.caption}</p>
+              <p style={{ fontSize: 12, color: "#9095A0", margin: "0 auto", maxWidth: 300 }}>{charState.need}</p>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 16 }}>
+                <div style={{ background: "#0B0C10", borderRadius: 10, padding: "8px 4px" }}>
+                  <div style={{ fontSize: 15, fontWeight: 800 }}>{Math.round((charState.muscle * 0.8 + charState.big * 0.2) * 100)}%</div>
+                  <div style={{ fontSize: 10, color: "#9095A0" }}>Muscle</div>
+                </div>
+                <div style={{ background: "#0B0C10", borderRadius: 10, padding: "8px 4px" }}>
+                  <div style={{ fontSize: 15, fontWeight: 800 }}>{streak}</div>
+                  <div style={{ fontSize: 10, color: "#9095A0" }}>Streak days</div>
+                </div>
+                <div style={{ background: "#0B0C10", borderRadius: 10, padding: "8px 4px" }}>
+                  <div style={{ fontSize: 15, fontWeight: 800 }}>{Math.round(charState.fatness * 100)}%</div>
+                  <div style={{ fontSize: 10, color: "#9095A0" }}>Cheat level</div>
+                </div>
+              </div>
+
+              <p style={{ fontSize: 11, color: "#5B6670", marginTop: 14, marginBottom: 0 }}>
+                +{10 + lvlBonus} XP per exercise, +{40 + 2 * lvlBonus} for finishing a full day, +25 for a new PR, +10 for logging a meal.
+              </p>
+            </Card>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+              <Card style={{ padding: 14, textAlign: "center" }}>
+                <div className="disp" style={{ fontSize: 22, color: "#FBBF24" }}>{prs.length}</div>
+                <div style={{ fontSize: 11, color: "#9095A0", marginTop: 2 }}>PRs logged</div>
+              </Card>
+              <Card style={{ padding: 14, textAlign: "center" }}>
+                <div className="disp" style={{ fontSize: 22, color: "#FF6B5B" }}>{xp}</div>
+                <div style={{ fontSize: 11, color: "#9095A0", marginTop: 2 }}>Total XP earned</div>
+              </Card>
+            </div>
+
+            <h2 className="disp" style={{ fontSize: 16, marginBottom: 10 }}>Badges</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20 }}>
+              {badges.map((b) => {
+                const BIcon = b.icon;
+                return (
+                  <div key={b.name} style={{ textAlign: "center", opacity: b.ok ? 1 : 0.4, background: "#15171C", border: `1px solid ${b.ok ? b.color : "#262932"}`, borderRadius: 12, padding: "10px 4px" }}>
+                    <BIcon size={20} color={b.ok ? b.color : "#5B6670"} />
+                    <div style={{ fontSize: 10, marginTop: 6, color: b.ok ? "#F5F6F7" : "#9095A0" }}>{b.name}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <h2 className="disp" style={{ fontSize: 16, marginBottom: 10 }}>1-rep max calculator</h2>
+            <Card style={{ marginBottom: 20 }}>
+              <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                <input type="number" placeholder="Weight (kg)" value={ormW} onChange={(e) => setOrmW(e.target.value)} style={{ flex: 1, minWidth: 0, padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                <input type="number" placeholder="Reps" value={ormR} onChange={(e) => setOrmR(e.target.value)} style={{ flex: 1, minWidth: 0, padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+              </div>
+              <div style={{ fontSize: 13, color: "#9095A0" }}>
+                {orm ? <>Estimated 1RM: <span className="disp" style={{ fontSize: 18, color: "#FBBF24" }}>{orm} kg</span></> : "Enter a weight and how many reps you did."}
+              </div>
+            </Card>
+
+            <h2 className="disp" style={{ fontSize: 16, marginBottom: 10 }}>Body weight</h2>
+            <Card style={{ marginBottom: 20 }}>
+              <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                <input type="number" step="0.1" placeholder="Today's weight (kg)" value={bwInput} onChange={(e) => setBwInput(e.target.value)} style={{ flex: 1, minWidth: 0, padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                <button
+                  onClick={() => {
+                    const kg = parseFloat(bwInput);
+                    if (!kg) return;
+                    setBodyLog((prev) => [{ id: Date.now(), kg, date: nowAU().toLocaleDateString("en-AU") }, ...prev]);
+                    setBwInput("");
+                  }}
+                  style={{ padding: "0 14px", background: "linear-gradient(120deg,#34D399,#22D3EE)", border: "none", borderRadius: 8, color: "#0B0C10", fontWeight: 700, cursor: "pointer" }}
+                >
+                  Log
+                </button>
+              </div>
+              {bodyLog.length === 0 ? (
+                <p style={{ fontSize: 13, color: "#9095A0", margin: 0 }}>No weigh-ins yet.</p>
+              ) : (
+                <>
+                  <div style={{ fontSize: 13, color: "#9095A0", marginBottom: 8 }}>
+                    Latest: <span className="disp" style={{ fontSize: 18, color: "#F5F6F7" }}>{bodyLog[0].kg} kg</span>
+                    {bodyLog.length > 1 && (
+                      <span style={{ marginLeft: 8, color: bodyLog[0].kg - bodyLog[bodyLog.length - 1].kg > 0 ? "#FBBF24" : "#34D399" }}>
+                        {bodyLog[0].kg - bodyLog[bodyLog.length - 1].kg > 0 ? "+" : ""}{(bodyLog[0].kg - bodyLog[bodyLog.length - 1].kg).toFixed(1)} kg since first log
+                      </span>
+                    )}
+                  </div>
+                  {bodyLog.slice(0, 5).map((b) => (
+                    <div key={b.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#9095A0", padding: "4px 0" }}>
+                      <span>{b.date}</span>
+                      <span>{b.kg} kg</span>
+                    </div>
+                  ))}
+                </>
+              )}
+            </Card>
+
+            <h2 className="disp" style={{ fontSize: 16, marginBottom: 10 }}>Personal records</h2>
+            <Card style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <input placeholder="Exercise (e.g. Deadlift)" value={newPr.exercise} onChange={(e) => setNewPr({ ...newPr, exercise: e.target.value })} style={{ padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                <input placeholder="Result (e.g. 100kg x3)" value={newPr.value} onChange={(e) => setNewPr({ ...newPr, value: e.target.value })} style={{ padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }} />
+                <select value={newPr.day} onChange={(e) => setNewPr({ ...newPr, day: e.target.value })} style={{ padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }}>
+                  {WEEK.map((d) => <option key={d.day} value={d.day}>{d.day}</option>)}
+                </select>
+                <button onClick={addPr} style={{ padding: "10px 0", background: "linear-gradient(120deg,#FBBF24,#FF6B5B)", border: "none", borderRadius: 8, color: "#0B0C10", fontWeight: 700, cursor: "pointer" }}>
+                  Record PR
+                </button>
+              </div>
+            </Card>
+
+            {prs.length === 0 ? (
+              <p style={{ fontSize: 13, color: "#9095A0" }}>No PRs logged yet — add your first one above.</p>
+            ) : (
+              prs.map((pr) => (
+                <Card key={pr.id} style={{ marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(251,191,36,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Trophy size={16} color="#FBBF24" />
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 15 }}>{pr.exercise}</div>
+                      <div style={{ fontSize: 13, color: "#9095A0", marginTop: 2 }}>{pr.value} · {pr.day} · {pr.date}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => removePr(pr.id)} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                    <Trash2 size={16} color="#5B6670" />
+                  </button>
+                </Card>
+              ))
+            )}
+          </div>
+        )}
+
+        {tab === "gear" && (
+          <div>
+            <h2 className="disp" style={{ fontSize: 16, marginBottom: 6 }}>Your home gear</h2>
+            <p style={{ fontSize: 13, color: "#9095A0", marginBottom: 16 }}>
+              Tap what you own — home-day workouts on the Plan tab update automatically to match.
+            </p>
+
+            <Card style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 12, color: "#9095A0", marginBottom: 8 }}>1. WHAT IS IT?</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+                {EQUIP_TYPES.map((t) => (
+                  <button
+                    key={t.key}
+                    onClick={() => setNewItem({ type: t.key, weight: null, qty: 1 })}
+                    style={{
+                      padding: "8px 14px",
+                      borderRadius: 20,
+                      border: newItem.type === t.key ? "1px solid #34D399" : "1px solid #2B2F38",
+                      background: newItem.type === t.key ? "rgba(52,211,153,0.15)" : "#1D2028",
+                      color: newItem.type === t.key ? "#34D399" : "#D8DAE0",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              {EQUIP_TYPES.find((t) => t.key === newItem.type)?.needsWeight && (
+                <>
+                  <div style={{ fontSize: 12, color: "#9095A0", marginBottom: 8 }}>2. WHAT WEIGHT?</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+                    {EQUIP_TYPES.find((t) => t.key === newItem.type).weights.map((w) => (
+                      <button
+                        key={w}
+                        onClick={() => setNewItem({ ...newItem, weight: w })}
+                        style={{
+                          minWidth: 48,
+                          padding: "8px 10px",
+                          borderRadius: 8,
+                          border: newItem.weight === w ? "1px solid #22D3EE" : "1px solid #2B2F38",
+                          background: newItem.weight === w ? "rgba(34,211,238,0.15)" : "#1D2028",
+                          color: newItem.weight === w ? "#22D3EE" : "#D8DAE0",
+                          fontSize: 13,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        {w}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                    <span style={{ fontSize: 12, color: "#9095A0" }}>Or type your own (kg):</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={newItem.weight ?? ""}
+                      onChange={(e) => setNewItem({ ...newItem, weight: e.target.value === "" ? null : parseFloat(e.target.value) })}
+                      placeholder="e.g. 13"
+                      style={{ width: 90, padding: 8, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div style={{ fontSize: 12, color: "#9095A0", marginBottom: 8 }}>
+                {EQUIP_TYPES.find((t) => t.key === newItem.type)?.needsWeight ? "3. HOW MANY?" : "2. HOW MANY?"}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18 }}>
+                <button
+                  onClick={() => setNewItem({ ...newItem, qty: Math.max(1, newItem.qty - 1) })}
+                  style={{ width: 34, height: 34, borderRadius: 8, border: "1px solid #2B2F38", background: "#1D2028", color: "#F5F6F7", fontSize: 16, cursor: "pointer" }}
+                >
+                  −
+                </button>
+                <span className="disp" style={{ fontSize: 18, minWidth: 20, textAlign: "center" }}>{newItem.qty}</span>
+                <button
+                  onClick={() => setNewItem({ ...newItem, qty: newItem.qty + 1 })}
+                  style={{ width: 34, height: 34, borderRadius: 8, border: "1px solid #2B2F38", background: "#1D2028", color: "#F5F6F7", fontSize: 16, cursor: "pointer" }}
+                >
+                  +
+                </button>
+              </div>
+
+              <button
+                onClick={addInventoryItem}
+                style={{ width: "100%", padding: "12px 0", background: "linear-gradient(120deg,#34D399,#22D3EE)", border: "none", borderRadius: 8, color: "#0B0C10", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+              >
+                Add to my gear
+              </button>
+            </Card>
+
+            {inventory.length === 0 ? (
+              <p style={{ fontSize: 13, color: "#9095A0" }}>Nothing added yet — home days will default to bodyweight-only exercises.</p>
+            ) : (
+              inventory.map((item) => (
+                <Card key={item.id} style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center", padding: 14 }}>
+                  <div style={{ fontSize: 14 }}>
+                    <span style={{ fontWeight: 700 }}>{EQUIP_TYPES.find((t) => t.key === item.type)?.label}</span>
+                    {item.weight > 0 && <span style={{ color: "#9095A0" }}> · {item.weight}kg</span>}
+                    <span style={{ color: "#9095A0" }}> · x{item.qty}</span>
+                  </div>
+                  <button onClick={() => removeInventoryItem(item.id)} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                    <Trash2 size={16} color="#5B6670" />
+                  </button>
+                </Card>
+              ))
+            )}
+
+            {maxDumbbell > 0 && (
+              <p style={{ fontSize: 12, color: "#5B6670", marginTop: 12 }}>Heaviest dumbbell on file: {maxDumbbell}kg — home exercises are matched to this.</p>
+            )}
+          </div>
+        )}
+
+        {tab === "settings" && (
+          <div>
+            <BackupCard />
+            <h2 className="disp" style={{ fontSize: 16, marginBottom: 6 }}>Account</h2>
+            <p style={{ fontSize: 13, color: "#9095A0", marginBottom: 16 }}>
+              No sign-in required to use the app — an account just lets you put a name to your dashboard.
+            </p>
+
+            <Card style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 12, color: "#9095A0", marginBottom: 6 }}>DISPLAY NAME</div>
+              <input
+                value={user.name}
+                onChange={(e) => setUser({ ...user, name: e.target.value })}
+                placeholder="Your name"
+                style={{ width: "100%", padding: 10, background: "#1D2028", border: "1px solid #2B2F38", borderRadius: 8, color: "#F5F6F7" }}
+              />
+            </Card>
+
+            {user.email ? (
+              <Card>
+                <div style={{ fontSize: 13, color: "#9095A0", marginBottom: 2 }}>Signed in as</div>
+                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>{user.email}</div>
+                <button
+                  onClick={() => setUser({ name: "Guest", email: "" })}
+                  style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1px solid #333849", color: "#D8DAE0", borderRadius: 8, padding: "9px 14px", fontSize: 13, cursor: "pointer" }}
+                >
+                  <LogOut size={14} /> Log out to guest
+                </button>
+              </Card>
+            ) : (
+              <Card>
+                <div style={{ display: "flex", background: "#1D2028", borderRadius: 10, padding: 4, marginBottom: 16 }}>
+                  {["signup", "login"].map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => { setSettingsMode(m); setSettingsError(""); }}
+                      style={{
+                        flex: 1,
+                        padding: "9px 0",
+                        border: "none",
+                        borderRadius: 8,
+                        background: settingsMode === m ? "linear-gradient(120deg,#7C3AED,#22D3EE)" : "transparent",
+                        color: settingsMode === m ? "#0B0C10" : "#9095A0",
+                        fontWeight: 700,
+                        fontSize: 13,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {m === "signup" ? "Create account" : "Log in"}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {settingsMode === "signup" && (
+                    <Field icon={<UserIcon size={16} color="#9095A0" />} placeholder="Your name" value={settingsName} onChange={(e) => setSettingsName(e.target.value)} />
+                  )}
+                  <Field icon={<Mail size={16} color="#9095A0" />} placeholder="Email" value={settingsEmail} onChange={(e) => setSettingsEmail(e.target.value)} />
+                  <Field icon={<Lock size={16} color="#9095A0" />} placeholder="Password" type="password" value={settingsPassword} onChange={(e) => setSettingsPassword(e.target.value)} />
+                </div>
+
+                {settingsError && <p style={{ color: "#FF6B5B", fontSize: 12, marginTop: 10 }}>{settingsError}</p>}
+
+                <button
+                  onClick={submitSettings}
+                  style={{ width: "100%", marginTop: 14, padding: "12px 0", border: "none", borderRadius: 10, background: "linear-gradient(120deg,#7C3AED,#22D3EE)", color: "#0B0C10", fontWeight: 800, fontSize: 14, cursor: "pointer" }}
+                >
+                  {settingsMode === "signup" ? "Create account" : "Log in"}
+                </button>
+                <p style={{ fontSize: 11, color: "#5B6670", marginTop: 12, marginBottom: 0 }}>
+                  Accounts are remembered for this session only — log in with the same email to switch back.
+                </p>
+              </Card>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* bottom nav */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(11,12,16,0.9)", backdropFilter: "blur(10px)", borderTop: "1px solid #262932", paddingBottom: "env(safe-area-inset-bottom)" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto", display: "flex" }}>
+          {navItems.map(({ key, icon: Icon, color }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              style={{ flex: 1, background: "none", border: "none", padding: "12px 0 10px", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, cursor: "pointer" }}
+            >
+              <Icon size={20} color={tab === key ? color : "#5B6670"} />
+              <div style={{ width: 4, height: 4, borderRadius: 2, background: tab === key ? color : "transparent" }} />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(<FitnessTracker />);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "Mum's Plan",
+  "short_name": "Mum's Plan",
+  "start_url": "mum.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B0C10",
+  "theme_color": "#0B0C10",
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
+}
